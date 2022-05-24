@@ -1,10 +1,9 @@
-# plotmyspec
-Small script to plot fits spectrums using Python and Matplotlib
+# PlotMySpec
+Small script to __plot fits spectrums__ using Python and Matplotlib
 
 ## Quickstart
 
 Create a configuration file in your working directory with this command
-
 ```bash
 $ python pms.py 2022-01-14 -i
 or 
