@@ -1,6 +1,12 @@
 # PlotMySpec
 Small script to __plot fits spectrums__ using Python and Matplotlib
 
+
+## Requirements 
+```bash
+pip install -r requirements.txt
+```
+
 ## Quickstart
 
 Create a configuration file in your working directory with this command
