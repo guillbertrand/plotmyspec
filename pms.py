@@ -23,9 +23,9 @@ __default_conf = {
     'y_label': 'Relative intensity',
     'no_grid': 0,
     'display_object_name': 1,
-    'title_pattern': "'- %%DATE-OBS%% - %%EXPTIME2%% - R=%%SPE_RPOW%% - %%BSS_SITE%% - %%OBSERVER%%'",
-    'label_pattern': "'%%DATE-OBS%%'",
-    'subtitle_pattern': "'%%BSS_INST%%'",
+    'title_pattern': "- %%DATE-OBS%% - %%EXPTIME2%% - R=%%SPE_RPOW%% - %%BSS_SITE%% - %%OBSERVER%%",
+    'label_pattern': "%%DATE-OBS%%",
+    'subtitle_pattern': "%%BSS_INST%%",
     'spec_file_regex': '_(.+)_(\d+)_(\d+)(.*).fit'
 }
 
@@ -174,7 +174,10 @@ if __name__ == '__main__':
             with open(os.path.join(wdir, 'pms.yaml'), 'w') as f:
                 f.write('---'+os.linesep)
                 for key, val in __default_conf.items():
-                    f.write(key+': '+str(val)+os.linesep)
+                    if('pattern' in key ):
+                        f.write(key+': "'+str(val)+'"'+os.linesep)
+                    else:
+                        f.write(key+': '+str(val)+os.linesep)
             logging.info('\U00002728 Create default configuration file \U0001F527  %s' % (os.path.join(wdir, 'pms.yaml')))
             exit() 
 
