@@ -164,12 +164,12 @@ if __name__ == '__main__':
     FORMAT = '* %(levelname)s - %(message)s'
     logging.basicConfig(level=logging.INFO, format=FORMAT)
 
-    logging.info('\U0001F680  PlotMySpec %s - Start \U0001F680' % __version__)
+    logging.info('\U0001F680 PlotMySpec %s - Start \U0001F680' % __version__)
 
     # create default configuration file --init
     if(args.init):
         if(os.path.exists(os.path.join(wdir, 'pms.yaml'))):
-            logging.info('\U00002728 Configuration file already exists \U0001F527  %s' % (os.path.join(wdir, 'pms.yaml')))
+            logging.info('\U0001F449Command --init skipped : configuration file already exists \U0001F527  %s' % (os.path.join(wdir, 'pms.yaml')))
         else:
             with open(os.path.join(wdir, 'pms.yaml'), 'w') as f:
                 f.write('---'+os.linesep)
@@ -178,7 +178,9 @@ if __name__ == '__main__':
                         f.write(key+': "'+str(val)+'"'+os.linesep)
                     else:
                         f.write(key+': '+str(val)+os.linesep)
-            logging.info('\U00002728 Create default configuration file \U0001F527  %s' % (os.path.join(wdir, 'pms.yaml')))
+            logging.info('\U00002728Default configuration file created \U0001F527  %s' % (os.path.join(wdir, 'pms.yaml')))
+            logging.info('\U00002728(Optionnaly) Customize it !')
+            logging.info('\U00002728And run this command : $ python pms.py %s' % (wdir))
             exit() 
 
     # load yaml configuration file
@@ -189,6 +191,7 @@ if __name__ == '__main__':
             confpath = None
 
     if confpath:
+        logging.info('\U00002728 Load configuration file \U0001F527  %s' % (os.path.join(wdir, 'pms.yaml')))
         with open(confpath, 'r') as f:
             conf = yaml.load(f,Loader=yaml.FullLoader)
     else :
