@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 from specutils import Spectrum1D
 
-__version__ = 0.3
+__version__ = 0.4
 
 __default_conf = {
     'line_width': 0.7,
@@ -22,7 +22,7 @@ __default_conf = {
     'x_label': 'Wavelength in Å',
     'y_label': 'Relative intensity',
     'no_grid': 0,
-    'display_object_title': 1,
+    'display_object_name': 1,
     'title_pattern': "'- %%DATE-OBS%% - %%EXPTIME2%% - R=%%SPE_RPOW%% - %%BSS_SITE%% - %%OBSERVER%%'",
     'label_pattern': "'%%DATE-OBS%%'",
     'subtitle_pattern': "'%%BSS_INST%%'",
@@ -107,7 +107,7 @@ class PlotMySpec():
 
         fig, ax = plt.subplots(figsize=(self._conf["fig_size_x"],self._conf["fig_size_y"]))
        
-        if(self._conf['display_object_title']):
+        if(self._conf['display_object_name']):
             self._spectrum_title = r"$\bf{"+self._spectums_collection[0]['header']['OBJNAME'].upper()+"}$ "
         self._spectrum_title += self.parsePattern(self._spectums_collection[0], self._conf["title_pattern"])
         self._spectrum_subtitle = self.parsePattern(self._spectums_collection[0], self._conf["subtitle_pattern"])
