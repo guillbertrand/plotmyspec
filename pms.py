@@ -29,6 +29,12 @@ __default_conf = {
     'spec_file_regex': '_(.+)_(\d+)_(\d+)(.*).fit'
 }
 
+''' 
+PlotMySpec 
+----------
+Small script to plot fits spectrums using Python and Matplotlib
+----------
+'''
 class PlotMySpec():
     _spectrum_title = ''
     _spectrum_subtitle = ''
@@ -127,7 +133,6 @@ class PlotMySpec():
             ax.grid(color='grey', alpha=0.4, linestyle='-', linewidth=0.5, axis='both')
         
         # Crop spectrum 
-       
         ax.set_xlim(self._crop[:2])  if(len(self._crop) >= 2) else ax.set_xlim([self._lambda1, self._lambda2])
         if(len(self._crop) == 4):
             ax.set_ylim(self._crop[2:])
@@ -144,9 +149,6 @@ class PlotMySpec():
         
 
 if __name__ == '__main__':
-
-    
-
     specs = []
     #
     parser = argparse.ArgumentParser()
