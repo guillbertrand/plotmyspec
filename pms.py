@@ -22,7 +22,7 @@ __default_conf = {
     'x_label': 'Wavelength in Å',
     'y_label': 'Relative intensity',
     'no_grid': 0,
-    'display_object_name': 1,
+    'object_name': '',
     'title_pattern': "- %%DATE-OBS%% - %%EXPTIME2%% - R=%%SPE_RPOW%% - %%BSS_SITE%% - %%OBSERVER%%",
     'label_pattern': "%%DATE-OBS%%",
     'subtitle_pattern': "%%BSS_INST%%",
@@ -82,7 +82,7 @@ class PlotMySpec():
 
     def plotSpec(self):
         for spec in self._spectums_collection:
-            plt, ax = self.initPlot()
+            plt, ax = self.initPlot(spec)
             pngFilename = spec['filename']+'_hd_plot.png'
             pngLRFilename = spec['filename']+'_plot.png'
             ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=spec["header"]['OBJNAME'], alpha=1, color="black", lw=self._conf['line_width']) 
@@ -90,12 +90,10 @@ class PlotMySpec():
             plt.savefig(pngFilename, dpi=300)
             plt.savefig(pngLRFilename, dpi=150)
             logging.info('\U0001F4C8Plot %s fits file > save as %s' % (spec["filename"], pngFilename))
-            plt.draw()
-            plt.pause(0.001)
-            input("Press [enter] to continue.")
+            plt.show()
             
     def plotSpecGroupMode(self):
-        plt, ax = self.initPlot()
+        plt, ax = self.initPlot(self._spectums_collection[0])
         pngFilename = self._spectums_collection[0]['filename']+'_group_hd_plot.png'
         pngLRFilename = self._spectums_collection[0]['filename']+'_group_plot.png'
         for spec in self._spectums_collection:
@@ -107,16 +105,16 @@ class PlotMySpec():
         logging.info('\U0001F4C8Plot spectrums > save as %s' % (pngFilename))
         plt.show()
 
-    def initPlot(self):
+    def initPlot(self, spec):
         plt.rcParams['font.size'] = self._conf["font_size"]
         plt.rcParams['font.family'] = self._conf["font_family"]
 
         fig, ax = plt.subplots(figsize=(self._conf["fig_size_x"],self._conf["fig_size_y"]))
        
-        if(self._conf['display_object_name']):
-            self._spectrum_title = r"$\bf{"+self._spectums_collection[0]['header']['OBJNAME'].upper()+"}$ "
-        self._spectrum_title += self.parsePattern(self._spectums_collection[0], self._conf["title_pattern"])
-        self._spectrum_subtitle = self.parsePattern(self._spectums_collection[0], self._conf["subtitle_pattern"])
+        obj = self._conf['object_name'] if(self._conf['object_name']) else spec['header']['OBJNAME'].upper()
+        self._spectrum_title = r"$\bf{%s}$ " % (obj)
+        self._spectrum_title += self.parsePattern(spec, self._conf["title_pattern"])
+        self._spectrum_subtitle = self.parsePattern(spec, self._conf["subtitle_pattern"])
         
         #Add Graph title
         plt.suptitle(self._spectrum_title,fontsize=self._conf["title_font_size"], fontweight=0, color='black', x=0.515,y=0.97, fontname =self._conf["font_family"])
