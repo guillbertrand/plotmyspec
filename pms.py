@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 from specutils import Spectrum1D
 
-__version__ = 0.4
+__version__ = 0.6
 
 __default_conf = {
     'line_width': 0.7,
