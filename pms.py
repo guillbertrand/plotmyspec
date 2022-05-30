@@ -26,7 +26,8 @@ __default_conf = {
     'title_pattern': "- %%DATE-OBS%% - %%EXPTIME2%% - R=%%SPE_RPOW%% - %%BSS_SITE%% - %%OBSERVER%%",
     'label_pattern': "%%DATE-OBS%%",
     'subtitle_pattern': "%%BSS_INST%%",
-    'spec_file_regex': '_(.+)_(\d+)_(\d+)(.*).fit'
+    'spec_file_regex': '_(.+)_(\d+)_(\d+)(.*).fit',
+    'crop': ''
 }
 
 ''' 
@@ -44,11 +45,11 @@ class PlotMySpec():
     _crop = []
     _conf = {}
 
-    def __init__(self, paths, crop, group, conf):
+    def __init__(self, paths, group, conf):
         self._conf = conf
         self._group_mode = group
         if(crop):
-            self._crop = np.array(crop.split(',')).astype(np.float64)
+            self._crop = np.array(self._conf.crop.split(',')).astype(np.float64)
 
         for path in paths:
             f = fits.open(path)
@@ -152,7 +153,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("path", type=str, help="Path to your fits directory")
     parser.add_argument("-i", "--init", action="store_true", help="Create a configuration file in your working directory")
-    parser.add_argument("-c", "--crop", type=str, help="Crop on a spectral region (lambda_min, lambda_max, intensity_min, intensity_max). Ex : -c 6500,6700,0,1")
     parser.add_argument("-g", "--group", action="store_true", help="Plot all spectrums on the same graph")
     args = parser.parse_args()
     path = args.path
@@ -205,5 +205,5 @@ if __name__ == '__main__':
             if(re.match(regex, file)):
                 specs.append(os.path.join(wdir, file))
     # Run PlotMySpec
-    smp = PlotMySpec(specs, crop, group, conf)
+    smp = PlotMySpec(specs, group, conf)
     smp.run()
