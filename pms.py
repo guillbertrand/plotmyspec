@@ -23,7 +23,7 @@ __default_conf = {
     'y_label': 'Relative intensity',
     'no_grid': 0,
     'object_name': '',
-    'title_pattern': "- %%DATE-OBS%% - %%EXPTIME2%% - R=%%SPE_RPOW%% - %%BSS_SITE%% - %%OBSERVER%%",
+    'title_pattern': "- %%DATE-OBS%% - %%EXPTIME2%% - %%BSS_SITE%% - %%OBSERVER%%",
     'label_pattern': "%%DATE-OBS%%",
     'subtitle_pattern': "%%BSS_INST%%",
     'spec_file_regex': '_(.+)_(\d+)_(\d+)(.*).fit',
