@@ -192,7 +192,7 @@ if __name__ == '__main__':
 
     if confpath:
         logging.info('\U00002728 Load configuration file \U0001F527  %s' % (os.path.join(wdir, 'pms.yaml')))
-        with open(confpath, 'r') as f:
+        with open(confpath, 'r', encoding='utf8') as f:
             conf = yaml.load(f,Loader=yaml.FullLoader)
     else :
         conf = __default_conf
