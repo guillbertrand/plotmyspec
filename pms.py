@@ -48,8 +48,8 @@ class PlotMySpec():
     def __init__(self, paths, group, conf):
         self._conf = conf
         self._group_mode = group
-        if(crop):
-            self._crop = np.array(self._conf.crop.split(',')).astype(np.float64)
+        if("crop" in self._conf and self._conf["crop"]):
+            self._crop = np.array(self._conf["crop"].split(',')).astype(np.float64)
 
         for path in paths:
             f = fits.open(path)
@@ -156,7 +156,6 @@ if __name__ == '__main__':
     parser.add_argument("-g", "--group", action="store_true", help="Plot all spectrums on the same graph")
     args = parser.parse_args()
     path = args.path
-    crop = args.crop
     group= args.group
 
     wdir = path
