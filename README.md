@@ -35,7 +35,7 @@ object_name: '' # by default equal to %%OBJNAME%% prop in your fits fle
 title_pattern: '- %%DATE-OBS%% - %%EXPTIME2%% - R=%%SPE_RPOW%% - %OBSERVER%'
 label_pattern: '%%DATE-OBS%%'
 subtitle_pattern: '%%BSS_INST%%'
-spec_file_regex: _(.+)_(\d+)_(\d+)(.*).fit
+spec_file_regex: _(.+)_(\d+)_(\d+)(.*).fit 
 crop: 6540,6585,0.25,1.1
 ```
 
