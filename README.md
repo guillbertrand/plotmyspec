@@ -30,11 +30,12 @@ fig_size_y: 6
 x_label: Wavelength in Å
 y_label: Relative intensity
 no_grid: 0
-display_object_title: 1
+object_name: ''
 title_pattern: '- %%DATE-OBS%% - %%EXPTIME2%% - R=%%SPE_RPOW%% - %OBSERVER%'
 label_pattern: '%%DATE-OBS%%'
 subtitle_pattern: '%%BSS_INST%%'
 spec_file_regex: _(.+)_(\d+)_(\d+)(.*).fit
+crop: 6540,6585,0.25,1.1
 ```
 
 ## Plots one or more spectrums on distincts graphs
@@ -64,18 +65,3 @@ $ python pms.py 2022-01-14 --group
 * INFO - 📈Plot spectrums > save as 2022-05-14/_phecda_20220513_912_group_hd_plot.png
 ```
 
-## Plot & Crop your spectrum
-
-```bash
-$ python pms.py 2022-01-14 -c 6550,6660,-1,4
-or
-$ python pms.py 2022-01-14 --crop 6550,6660,-1,4
-
-* INFO - 🚀  PlotMySpec 0.3 - Start 🚀
-* INFO - 🖥 Process 2022-05-14/_phecda_20220513_912 fits file
-* INFO - 🖥 Process 2022-05-14/_hd123299_20220513_979 fits file
-* INFO - 📈Plot /Volumes/Samsung_T5/ASTRO/Starex/2022-05-14/_phecda_20220513_912 fits file > save as 2022-05-14/_phecda_20220513_912_hd_plot.png
-Press [enter] to continue.
-* INFO - 📈Plot /Volumes/Samsung_T5/ASTRO/Starex/2022-05-14/_hd123299_20220513_979 fits file > save as 2022-05-14/_hd123299_20220513_979_hd_plot.png
-Press [enter] to continue.
-```
