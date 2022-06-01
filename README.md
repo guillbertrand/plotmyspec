@@ -61,9 +61,9 @@ or
 $ python pms.py 2022-01-14 --group
 
 * INFO - 🚀  PlotMySpec 0.3 - Start 🚀
-* INFO - 🖥 Process 2022-05-14/_phecda_20220513_912 fits file
-* INFO - 🖥 Process 2022-05-14/_hd123299_20220513_979 fits file
-* INFO - 📈Plot spectrums > save as 2022-05-14/_phecda_20220513_912_group_hd_plot.png
+* INFO - 🖥 Process 2022-05-14/_sheliak_20220513_912 fits file
+* INFO - 🖥 Process 2022-05-14/_sheliak_20220513_979 fits file
+* INFO - 📈Plot spectrums > save as 2022-05-14/_sheliak_20220513_912_group_hd_plot.png
 ```
 
 ![multiple spectrums](http://www.astrosurf.com/uploads/monthly_2022_05/_sheliak_20220520_956_group_plot.png.2991b5a388ae1a37891d57211ca967dc.png)
