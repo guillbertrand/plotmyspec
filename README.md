@@ -18,7 +18,7 @@ $ python pms.py 2022-01-14 --init
 ```
 
 Customize your configuration file.
-__*_pattern__ properties allow you to auto-fill value with your fits file header contents.
+__title_pattern, label_pattern and subtitle_pattern__ properties allow you to auto-fill value with your fits file header contents.
 
 ```bash
 ---
