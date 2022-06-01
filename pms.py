@@ -10,10 +10,10 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 from specutils import Spectrum1D
 
-__version__ = 0.6
+__version__ = 0.7
 
 __default_conf = {
-    'line_width': 0.7,
+    'line_width': 0.6,
     'font_size': 8,
     'title_font_size': 9,
     'font_family': 'monospace',
