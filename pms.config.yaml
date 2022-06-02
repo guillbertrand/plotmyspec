@@ -1,0 +1,18 @@
+---
+line_width: 0.6
+font_size: 8
+title_font_size: 9
+font_family: monospace
+fig_size_x: 11
+fig_size_y: 6
+x_label: Wavelength in Å
+y_label: Relative intensity
+no_grid: 0
+object_name: ''
+title_pattern: "- %%DATE-OBS%% - %%EXPTIME2%% - %%BSS_SITE%% - %%OBSERVER%%"
+label_pattern: "%%DATE-OBS%%"
+subtitle_pattern: "%%BSS_INST%%"
+spec_file_regex: '_(.+)_(\d+)_(\d+)(.*).fit'
+crop: 0
+compare_mode : 0
+compare_mode_offset : 0

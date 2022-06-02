@@ -10,25 +10,8 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 from specutils import Spectrum1D
 
-__version__ = 0.7
+__version__ = 1.0
 
-__default_conf = {
-    'line_width': 0.6,
-    'font_size': 8,
-    'title_font_size': 9,
-    'font_family': 'monospace',
-    'fig_size_x': 11,
-    'fig_size_y': 6,
-    'x_label': 'Wavelength in Å',
-    'y_label': 'Relative intensity',
-    'no_grid': 0,
-    'object_name': '',
-    'title_pattern': "- %%DATE-OBS%% - %%EXPTIME2%% - %%BSS_SITE%% - %%OBSERVER%%",
-    'label_pattern': "%%DATE-OBS%%",
-    'subtitle_pattern': "%%BSS_INST%%",
-    'spec_file_regex': '_(.+)_(\d+)_(\d+)(.*).fit',
-    'crop': ''
-}
 
 ''' 
 PlotMySpec 
@@ -41,24 +24,25 @@ class PlotMySpec():
     _spectrum_subtitle = ''
     _spectrums_path = []
     _spectums_collection = []
-    _group_mode = False
+    _compare_mode = False
     _crop = []
     _conf = {}
 
-    def __init__(self, paths, group, conf):
+    def __init__(self, paths, conf):
         self._conf = conf
-        self._group_mode = group
+        self._compare_mode = self._conf["compare_mode"]
         if("crop" in self._conf and self._conf["crop"]):
             self._crop = np.array(self._conf["crop"].split(',')).astype(np.float64)
 
         for path in paths:
             f = fits.open(path)
+            head_tail = os.path.split(path)
             spectrum_data = {}
             spectrum_data["filename"] = os.path.splitext(path)[0]
             spectrum_data["header"] = f[0].header
             if not('CRPIX1' in spectrum_data["header"]):
                 continue
-            logging.info('\U0001F5A5 Process %s fits file' % (spectrum_data["filename"]))
+            logging.info('\U0001F5A5 Process %s fits file' % (head_tail[1]))
             # Get first pixel reference
             xRef = spectrum_data["header"]['CRPIX1'] - 1
             #Get length of data axis1
@@ -90,7 +74,7 @@ class PlotMySpec():
             plt.tight_layout(pad=1, w_pad=0, h_pad=0)
             plt.savefig(pngFilename, dpi=300)
             plt.savefig(pngLRFilename, dpi=150)
-            logging.info('\U0001F4C8Plot %s fits file > save as %s' % (spec["filename"], pngFilename))
+            logging.info('\U0001F4C8 Plot %s fits file > save as %s' % (spec["filename"], pngFilename))
             plt.show()
             
     def plotSpecGroupMode(self):
@@ -103,7 +87,7 @@ class PlotMySpec():
         plt.legend() 
         plt.savefig(pngFilename, dpi=300)
         plt.savefig(pngLRFilename, dpi=150)
-        logging.info('\U0001F4C8Plot spectrums > save as %s' % (pngFilename))
+        logging.info('\U0001F4C8 Plot spectrums > save as %s' % (pngFilename))
         plt.show()
 
     def initPlot(self, spec):
@@ -112,7 +96,7 @@ class PlotMySpec():
 
         fig, ax = plt.subplots(figsize=(self._conf["fig_size_x"],self._conf["fig_size_y"]))
        
-        obj = self._conf['object_name'] if(self._conf['object_name']) else spec['header']['OBJNAME'].upper()
+        obj = self._conf['object_name'] if(self._conf['object_name']) else spec['header']['OBJNAME']
         self._spectrum_title = r"$\bf{%s}$ " % (obj)
         self._spectrum_title += self.parsePattern(spec, self._conf["title_pattern"])
         self._spectrum_subtitle = self.parsePattern(spec, self._conf["subtitle_pattern"])
@@ -141,7 +125,7 @@ class PlotMySpec():
         return (plt, ax)
 
     def run(self):
-        if(self._group_mode and len(self._spectums_collection) > 1):
+        if(self._compare_mode and len(self._spectums_collection) > 1):
             self.plotSpecGroupMode()
         else:
             self.plotSpec()
@@ -150,51 +134,38 @@ class PlotMySpec():
 if __name__ == '__main__':
     specs = []
     #
+    default_conf_filename = 'pms.config.yaml'
+
+    #
     parser = argparse.ArgumentParser()
     parser.add_argument("path", type=str, help="Path to your fits directory")
-    parser.add_argument("-i", "--init", action="store_true", help="Create a configuration file in your working directory")
-    parser.add_argument("-g", "--group", action="store_true", help="Plot all spectrums on the same graph")
+    parser.add_argument("-c", "--config", type=str, default=default_conf_filename, help="Custom config file name")
+    
     args = parser.parse_args()
     path = args.path
-    group= args.group
+    conf_filename = args.config
 
     wdir = path
 
-    FORMAT = '* %(levelname)s - %(message)s'
+    FORMAT = '** %(message)s'
     logging.basicConfig(level=logging.INFO, format=FORMAT)
 
     logging.info('\U0001F680 PlotMySpec %s - Start \U0001F680' % __version__)
 
-    # create default configuration file --init
-    if(args.init):
-        if(os.path.exists(os.path.join(wdir, 'pms.yaml'))):
-            logging.info('\U0001F449Command --init skipped : configuration file already exists \U0001F527  %s' % (os.path.join(wdir, 'pms.yaml')))
-        else:
-            with open(os.path.join(wdir, 'pms.yaml'), 'w') as f:
-                f.write('---'+os.linesep)
-                for key, val in __default_conf.items():
-                    if('pattern' in key ):
-                        f.write(key+': "'+str(val)+'"'+os.linesep)
-                    else:
-                        f.write(key+': '+str(val)+os.linesep)
-            logging.info('\U00002728Default configuration file created \U0001F527  %s' % (os.path.join(wdir, 'pms.yaml')))
-            logging.info('\U00002728(Optionnaly) Customize it !')
-            logging.info('\U00002728And run this command : $ python pms.py %s' % (wdir))
-            exit() 
-
     # load yaml configuration file
-    confpath = os.path.join(wdir,'pms.yaml')
+    confpath = os.path.join(wdir,conf_filename)
+    cust_confpath = os.path.join(wdir, conf_filename)
     if not (os.path.exists(confpath)):
-        confpath = 'pms.yaml'
+        confpath = conf_filename
         if not (os.path.exists(confpath)):
             confpath = None
 
     if confpath:
-        logging.info('\U00002728 Load configuration file \U0001F527  %s' % (os.path.join(wdir, 'pms.yaml')))
+        logging.info('\U00002728 Load configuration file \U0001F527  %s' % (confpath))
         with open(confpath, 'r', encoding='utf8') as f:
             conf = yaml.load(f,Loader=yaml.FullLoader)
     else :
-        conf = __default_conf
+        logging.info('\U0001F4C1 Error : pms.config.yaml not found !' % (len(specs)))
 
     # find spec files 
     wdir = path
@@ -203,6 +174,10 @@ if __name__ == '__main__':
             regex = re.compile(conf["spec_file_regex"])
             if(re.match(regex, file)):
                 specs.append(os.path.join(wdir, file))
-    # Run PlotMySpec
-    smp = PlotMySpec(specs, group, conf)
-    smp.run()
+    if not len(specs):
+        logging.info('\U0001F4C1 Error : %d spectrum file found !' % (len(specs)))
+    else:
+        logging.info('\U0001F4C1 %d spectrums files found !' % (len(specs)))
+        # Run PlotMySpec
+        smp = PlotMySpec(specs, conf)
+        smp.run()

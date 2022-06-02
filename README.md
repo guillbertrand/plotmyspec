@@ -10,13 +10,6 @@ pip install -r requirements.txt
 
 ## Quickstart
 
-Create a configuration file (pms.yaml) in your working directory with this command
-```bash
-$ python pms.py 2022-05-14 -i
-or 
-$ python pms.py 2022-05-14 --init
-```
-
 Customize your configuration file (pms.yaml).
 __title_pattern, label_pattern and subtitle_pattern__ properties allow you to auto-fill value with your fits file header contents.
 
@@ -37,6 +30,8 @@ label_pattern: '%%DATE-OBS%%'
 subtitle_pattern: '%%BSS_INST%%'
 spec_file_regex: _(.+)_(\d+)_(\d+)(.*).fit 
 crop: 6540,6585,0.25,1.1 # optional
+compare_mode : 0
+compare_mode_offset : 0
 ```
 
 ## Plot one or more spectrums on distincts graphs
@@ -53,10 +48,12 @@ $ python pms.py 2022-01-14
 
 ## Plot multiple spectrums on the same graph
 
+Set __compare_mode=1__ in your configuration file.
+
 ```bash
-$ python pms.py 2022-05-14 -g
+$ python pms.py 2022-05-14
 or
-$ python pms.py 2022-05-14 --group
+$ python pms.py 2022-05-14
 
 * INFO - 🚀  PlotMySpec 0.3 - Start 🚀
 * INFO - 🖥 Process 2022-05-14/_sheliak_20220513_912 fits file
