@@ -47,10 +47,8 @@ $ python pms.py 2022-01-14
 * INFO - 🚀  PlotMySpec 0.3 - Start 🚀
 * INFO - 🖥 Process 2022-05-14/_phecda_20220513_912 fits file
 * INFO - 🖥 Process 2022-05-14/_hd123299_20220513_979 fits file
-* INFO - 📈Plot /Volumes/Samsung_T5/ASTRO/Starex/2022-05-14/_phecda_20220513_912 fits file > save as 2022-05-14/_phecda_20220513_912_hd_plot.png
-Press [enter] to continue.
-* INFO - 📈Plot /Volumes/Samsung_T5/ASTRO/Starex/2022-05-14/_hd123299_20220513_979 fits file > save as 2022-05-14/_hd123299_20220513_979_hd_plot.png
-Press [enter] to continue.
+* INFO - 📈Plot 2022-05-14/_phecda_20220513_912 fits file > save as 2022-05-14/_phecda_20220513_912_hd_plot.png
+* INFO - 📈Plot 2022-05-14/_hd123299_20220513_979 fits file > save as 2022-05-14/_hd123299_20220513_979_hd_plot.png
 ```
 
 ## Plot multiple spectrums on the same graph
