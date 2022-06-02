@@ -10,14 +10,14 @@ pip install -r requirements.txt
 
 ## Quickstart
 
-Create a configuration file in your working directory with this command
+Create a configuration file (pms.yaml) in your working directory with this command
 ```bash
 $ python pms.py 2022-01-14 -i
 or 
 $ python pms.py 2022-01-14 --init
 ```
 
-Customize your configuration file.
+Customize your configuration file (pms.yaml).
 __title_pattern, label_pattern and subtitle_pattern__ properties allow you to auto-fill value with your fits file header contents.
 
 ```bash
@@ -39,7 +39,7 @@ spec_file_regex: _(.+)_(\d+)_(\d+)(.*).fit
 crop: 6540,6585,0.25,1.1
 ```
 
-## Plots one or more spectrums on distincts graphs
+## Plot one or more spectrums on distincts graphs
 
 ```bash
 $ python pms.py 2022-01-14 
@@ -53,7 +53,7 @@ Press [enter] to continue.
 Press [enter] to continue.
 ```
 
-## Plots multiple spectrums on the same graph
+## Plot multiple spectrums on the same graph
 
 ```bash
 $ python pms.py 2022-01-14 -g
