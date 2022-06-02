@@ -37,13 +37,13 @@ compare_mode_offset : 0
 ## Plot one or more spectrums on distincts graphs
 
 ```bash
-$ python pms.py 2022-01-14 
+$ python pms.py /Volumes/Samsung_T5/2022-01-14/ 
 
-* INFO - 🚀  PlotMySpec 0.3 - Start 🚀
-* INFO - 🖥 Process 2022-05-14/_phecda_20220513_912 fits file
-* INFO - 🖥 Process 2022-05-14/_hd123299_20220513_979 fits file
-* INFO - 📈Plot 2022-05-14/_phecda_20220513_912 fits file > save as 2022-05-14/_phecda_20220513_912_hd_plot.png
-* INFO - 📈Plot 2022-05-14/_hd123299_20220513_979 fits file > save as 2022-05-14/_hd123299_20220513_979_hd_plot.png
+- 🚀  PlotMySpec 1.1 - Start 🚀
+- 🖥 Process _phecda_20220513_912 fits file
+- 🖥 Process _hd123299_20220513_979 fits file
+- 📈Plot _phecda_20220513_912 fits file > save as 2022-05-14/_phecda_20220513_912_hd_plot.png
+- 📈Plot _hd123299_20220513_979 fits file > save as 2022-05-14/_hd123299_20220513_979_hd_plot.png
 ```
 
 ## Plot multiple spectrums on the same graph
@@ -51,14 +51,19 @@ $ python pms.py 2022-01-14
 Set __compare_mode=1__ in your configuration file.
 
 ```bash
-$ python pms.py 2022-05-14
-or
-$ python pms.py 2022-05-14
+$ python pms.py /Volumes/Samsung_T5/2022-01-14/ 
 
-* INFO - 🚀  PlotMySpec 0.3 - Start 🚀
-* INFO - 🖥 Process 2022-05-14/_sheliak_20220513_912 fits file
-* INFO - 🖥 Process 2022-05-14/_sheliak_20220513_979 fits file
-* INFO - 📈Plot spectrums > save as 2022-05-14/_sheliak_20220513_912_group_hd_plot.png
+- 🚀 PlotMySpec 1.1 - Start 🚀
+- ✨ Load configuration file 🔧  /Volumes/Samsung_T5/2022-01-14/pms.config.yaml
+- 📁 7 spectrums files found !
+- 🖥 Process @m1.fits fits file
+- 🖥 Process @m2.fits fits file
+- 🖥 Process @m3.fits fits file
+- 🖥 Process @m4.fits fits file
+- 🖥 Process @m5.fits fits file
+- 🖥 Process @m6.fits fits file
+- 🖥 Process @m7.fits fits file
+- 📈 Plot spectrums > save as /Volumes/Samsung_T5/2022-01-14/@m1_group_hd_plot.png
 ```
 
 ![multiple spectrums](http://www.astrosurf.com/uploads/monthly_2022_05/_sheliak_20220520_956_group_plot.png.2991b5a388ae1a37891d57211ca967dc.png)

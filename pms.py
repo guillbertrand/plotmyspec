@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 from specutils import Spectrum1D
 
-__version__ = 1.0
+__version__ = 1.1
 
 
 ''' 
@@ -147,7 +147,7 @@ if __name__ == '__main__':
 
     wdir = path
 
-    FORMAT = '** %(message)s'
+    FORMAT = '- %(message)s'
     logging.basicConfig(level=logging.INFO, format=FORMAT)
 
     logging.info('\U0001F680 PlotMySpec %s - Start \U0001F680' % __version__)
