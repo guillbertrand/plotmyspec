@@ -181,7 +181,7 @@ if __name__ == '__main__':
         with open(confpath, 'r', encoding='utf8') as f:
             conf = yaml.load(f,Loader=yaml.FullLoader)
     else :
-        logging.info('\U0001F4C1 Error : pms.config.yaml not found !' % (len(specs)))
+        logging.info('\U0001F4C1 Error : pms.config.yaml not found !')
 
     # find spec files 
     wdir = path
