@@ -12,9 +12,9 @@ pip install -r requirements.txt
 
 Create a configuration file (pms.yaml) in your working directory with this command
 ```bash
-$ python pms.py 2022-01-14 -i
+$ python pms.py 2022-05-14 -i
 or 
-$ python pms.py 2022-01-14 --init
+$ python pms.py 2022-05-14 --init
 ```
 
 Customize your configuration file (pms.yaml).
@@ -36,7 +36,7 @@ title_pattern: '- %%DATE-OBS%% - %%EXPTIME2%% - R=%%SPE_RPOW%% - %OBSERVER%'
 label_pattern: '%%DATE-OBS%%'
 subtitle_pattern: '%%BSS_INST%%'
 spec_file_regex: _(.+)_(\d+)_(\d+)(.*).fit 
-crop: 6540,6585,0.25,1.1
+crop: 6540,6585,0.25,1.1 # optional
 ```
 
 ## Plot one or more spectrums on distincts graphs
@@ -56,9 +56,9 @@ Press [enter] to continue.
 ## Plot multiple spectrums on the same graph
 
 ```bash
-$ python pms.py 2022-01-14 -g
+$ python pms.py 2022-05-14 -g
 or
-$ python pms.py 2022-01-14 --group
+$ python pms.py 2022-05-14 --group
 
 * INFO - 🚀  PlotMySpec 0.3 - Start 🚀
 * INFO - 🖥 Process 2022-05-14/_sheliak_20220513_912 fits file
