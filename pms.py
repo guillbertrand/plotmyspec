@@ -191,7 +191,7 @@ if __name__ == '__main__':
             if(re.match(regex, file)):
                 specs.append(os.path.join(wdir, file))
     if not len(specs):
-        logging.info('\U0001F4C1 Error : %d spectrum file found !' % (len(specs)))
+        logging.info('\U0001F4C1 Error : 0 spectrum file found !')
     else:
         logging.info('\U0001F4C1 %d spectrums files found !' % (len(specs)))
         # Run PlotMySpec
