@@ -24,7 +24,7 @@ fig_size_y: 6
 x_label: Wavelength in Å
 y_label: Relative intensity
 no_grid: 0
-object_name: '' # by default equal to %%OBJNAME%% prop in your fits fle
+object_name: '' # by default equal to %%OBJNAME%% property in your fits file
 title_pattern: '- %%DATE-OBS%% - %%EXPTIME2%% - R=%%SPE_RPOW%% - %OBSERVER%'
 label_pattern: '%%DATE-OBS%%'
 subtitle_pattern: '%%BSS_INST%%'
