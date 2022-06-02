@@ -42,9 +42,9 @@ class PlotMySpec():
             spectrum_data["basename"] = head_tail[1]
             spectrum_data["header"] = f[0].header
             if not('CRPIX1' in spectrum_data["header"]):
-                logging.info('\U0001F6AB Error : Unable to process %s' % (head_tail[1]))
+                logging.info('\U0001F5A5 \U0000274C Unable to process %s' % (head_tail[1]))
                 continue
-            logging.info('\U0001F5A5 Process %s' % (head_tail[1]))
+            logging.info('\U0001F5A5 \U00002705 Process %s' % (head_tail[1]))
             # Get first pixel reference
             xRef = spectrum_data["header"]['CRPIX1'] - 1
             #Get length of data axis1
