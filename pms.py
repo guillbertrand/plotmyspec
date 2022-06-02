@@ -39,10 +39,12 @@ class PlotMySpec():
             head_tail = os.path.split(path)
             spectrum_data = {}
             spectrum_data["filename"] = os.path.splitext(path)[0]
+            spectrum_data["basename"] = head_tail[1]
             spectrum_data["header"] = f[0].header
             if not('CRPIX1' in spectrum_data["header"]):
+                logging.info('\U0001F6AB Error : Unable to process %s' % (head_tail[1]))
                 continue
-            logging.info('\U0001F5A5 Process %s fits file' % (head_tail[1]))
+            logging.info('\U0001F5A5 Process %s' % (head_tail[1]))
             # Get first pixel reference
             xRef = spectrum_data["header"]['CRPIX1'] - 1
             #Get length of data axis1
@@ -74,7 +76,7 @@ class PlotMySpec():
             plt.tight_layout(pad=1, w_pad=0, h_pad=0)
             plt.savefig(pngFilename, dpi=300)
             plt.savefig(pngLRFilename, dpi=150)
-            logging.info('\U0001F4C8 Plot %s fits file > save as %s' % (spec["filename"], pngFilename))
+            logging.info('\U0001F4C8 Plot %s > save as %s' % (spec["basename"], pngFilename))
             plt.show()
             
     def plotSpecGroupMode(self):

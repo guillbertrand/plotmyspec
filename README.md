@@ -39,11 +39,15 @@ compare_mode_offset : 0
 ```bash
 $ python pms.py /Volumes/Samsung_T5/2022-01-14/ 
 
-- 🚀  PlotMySpec 1.1 - Start 🚀
-- 🖥 Process _phecda_20220513_912 fits file
-- 🖥 Process _hd123299_20220513_979 fits file
-- 📈Plot _phecda_20220513_912 fits file > save as 2022-05-14/_phecda_20220513_912_hd_plot.png
-- 📈Plot _hd123299_20220513_979 fits file > save as 2022-05-14/_hd123299_20220513_979_hd_plot.png
+- 🚀 PlotMySpec 1.1 - Start 🚀
+- ✨ Load configuration file 🔧  pms.config.yaml
+- 📁 4 spectrums files found !
+- 🚫 Error : Unable to process _phecda_20220513_912_2D.fits
+- 🖥 Process _phecda_20220513_912.fits 
+- 🚫 Error : Unable to process _hd123299_20220513_979_2D.fits
+- 🖥 Process _hd123299_20220513_979.fits 
+- 📈 Plot _phecda_20220513_912.fits > save as /Volumes/Samsung_T5/2022-05-14/_phecda_20220513_912_hd_plot.png
+- 📈 Plot _hd123299_20220513_979.fits > save as /Volumes/Samsung_T5/2022-05-14/_hd123299_20220513_979_hd_plot.png
 ```
 
 ## Plot multiple spectrums on the same graph
@@ -56,13 +60,13 @@ $ python pms.py /Volumes/Samsung_T5/2022-01-14/
 - 🚀 PlotMySpec 1.1 - Start 🚀
 - ✨ Load configuration file 🔧  /Volumes/Samsung_T5/2022-01-14/pms.config.yaml
 - 📁 7 spectrums files found !
-- 🖥 Process @m1.fits fits file
-- 🖥 Process @m2.fits fits file
-- 🖥 Process @m3.fits fits file
-- 🖥 Process @m4.fits fits file
-- 🖥 Process @m5.fits fits file
-- 🖥 Process @m6.fits fits file
-- 🖥 Process @m7.fits fits file
+- 🖥 Process @m1.fits 
+- 🖥 Process @m2.fits 
+- 🖥 Process @m3.fits 
+- 🖥 Process @m4.fits 
+- 🖥 Process @m5.fits 
+- 🖥 Process @m6.fits
+- 🖥 Process @m7.fits 
 - 📈 Plot spectrums > save as /Volumes/Samsung_T5/2022-01-14/@m1_group_hd_plot.png
 ```
 
