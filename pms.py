@@ -13,6 +13,8 @@ from specutils import Spectrum1D
 __version__ = 1.1
 
 
+
+
 ''' 
 PlotMySpec 
 ----------
@@ -27,6 +29,15 @@ class PlotMySpec():
     _compare_mode = False
     _crop = []
     _conf = {}
+    _balmer_lines = {
+		"Hα" : 6562.82,
+		"Hβ" : 4861.33,
+		"Hɣ" : 4340.47,
+		"Hδ" : 4101.74,
+        "Hε" : 3970.07,
+        "Hζ" : 3889.04,
+        "Hη" : 3835.38
+	}
 
     def __init__(self, paths, conf):
         self._conf = conf
@@ -98,8 +109,11 @@ class PlotMySpec():
 
         fig, ax = plt.subplots(figsize=(self._conf["fig_size_x"],self._conf["fig_size_y"]))
        
+        self._spectrum_title = ''
         obj = self._conf['object_name'] if(self._conf['object_name']) else spec['header']['OBJNAME']
-        self._spectrum_title = r"$\bf{%s}$ " % (obj)
+        split_oname = obj.split(' ')
+        for w in split_oname:
+            self._spectrum_title += r"$\bf{%s}$ " % (w)
         self._spectrum_title += self.parsePattern(spec, self._conf["title_pattern"])
         self._spectrum_subtitle = self.parsePattern(spec, self._conf["subtitle_pattern"])
         
