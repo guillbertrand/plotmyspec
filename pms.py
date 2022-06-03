@@ -130,8 +130,8 @@ class PlotMySpec():
         if not (self._conf['no_grid']):
             ax.grid(color='grey', alpha=0.4, linestyle='-', linewidth=0.5, axis='both')
 
-        # Plot Balmer lines
-        if("show_balmer_line" in self._conf and self._conf["show_balmer_line"]):
+        # Plot H alpha lines
+        if("show_halpha_line" in self._conf and self._conf["show_halpha_line"]):
             for name, x in self._balmer_lines.items():
                 plt.axvline(x=x, color='red', linestyle='--', linewidth=0.5)
 
