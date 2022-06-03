@@ -12,9 +12,6 @@ from specutils import Spectrum1D
 
 __version__ = 1.2
 
-
-
-
 ''' 
 PlotMySpec 
 ----------
@@ -84,6 +81,7 @@ class PlotMySpec():
         return pattern
 
     def plotSpec(self):
+        i=0
         for spec in self._spectums_collection:
             plt, ax = self.initPlot(spec)
             pngFilename = spec['filename']+'_plot.png'
@@ -101,10 +99,11 @@ class PlotMySpec():
         for spec in self._spectums_collection:
             label = self.parsePattern(spec, self._conf['label_pattern'])
             c = self._conf["compare_mode_color"] if "compare_mode_color" in self._conf and self._conf["compare_mode_color"] else None
-            
-            ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width']) 
+            ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width'])
+
         if(not "compare_mode_no_label" in self._conf or not self._conf["compare_mode_no_label"]):
             plt.legend() 
+
         plt.savefig(pngFilename, dpi=300)
         plt.savefig(pngLRFilename, dpi=150)
         logging.info('\U0001F4C8 Plot spectrums > save as %s' % (pngFilename))
