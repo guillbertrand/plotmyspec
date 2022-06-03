@@ -28,13 +28,7 @@ class PlotMySpec():
     _conf = {}
     _offset = 0
     _balmer_lines = {
-		"Hα" : 6562.82,
-		"Hβ" : 4861.33,
-		"Hɣ" : 4340.47,
-		"Hδ" : 4101.74,
-        "Hε" : 3970.07,
-        "Hζ" : 3889.04,
-        "Hη" : 3835.38
+		"Halpha" : 6562.82
 	}
 
     def __init__(self, paths, conf):
@@ -81,7 +75,6 @@ class PlotMySpec():
         return pattern
 
     def plotSpec(self):
-        i=0
         for spec in self._spectums_collection:
             plt, ax = self.initPlot(spec)
             pngFilename = spec['filename']+'_plot.png'
@@ -101,7 +94,7 @@ class PlotMySpec():
             c = self._conf["compare_mode_color"] if "compare_mode_color" in self._conf and self._conf["compare_mode_color"] else None
             ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width'])
 
-        if(not "compare_mode_no_label" in self._conf or not self._conf["compare_mode_no_label"]):
+        if(not "compare_mode_no_label" in self._conf or self._conf["compare_mode_no_label"] == 0):
             plt.legend() 
 
         plt.savefig(pngFilename, dpi=300)
@@ -136,7 +129,12 @@ class PlotMySpec():
         #Add grid 
         if not (self._conf['no_grid']):
             ax.grid(color='grey', alpha=0.4, linestyle='-', linewidth=0.5, axis='both')
-        
+
+        # Plot Balmer lines
+        if("show_balmer_line" in self._conf and self._conf["show_balmer_line"]):
+            for name, x in self._balmer_lines.items():
+                plt.axvline(x=x, color='red', linestyle='--', linewidth=0.5)
+
         # Crop spectrum 
         ax.set_xlim(self._crop[:2])  if(len(self._crop) >= 2) else ax.set_xlim([self._lambda1, self._lambda2])
         if(len(self._crop) == 4):
