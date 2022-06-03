@@ -102,6 +102,8 @@ class PlotMySpec():
         for spec in self._spectums_collection:
             label = self.parsePattern(spec, self._conf['label_pattern'])
             c = self._conf["compare_mode_color"] if "compare_mode_color" in self._conf and self._conf["compare_mode_color"] else None
+            if("compare_mode_no_label" in self._conf and self._conf["compare_mode_no_label"]):
+                label = '' 
             ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width']) 
         plt.legend() 
         plt.savefig(pngFilename, dpi=300)
