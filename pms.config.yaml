@@ -18,3 +18,4 @@ compare_mode : 0
 compare_mode_offset : 0
 compare_mode_color: 
 compare_mode_no_label: 0
+dpi: 150

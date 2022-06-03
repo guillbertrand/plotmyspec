@@ -86,12 +86,11 @@ class PlotMySpec():
     def plotSpec(self):
         for spec in self._spectums_collection:
             plt, ax = self.initPlot(spec)
-            pngFilename = spec['filename']+'_hd_plot.png'
-            pngLRFilename = spec['filename']+'_plot.png'
+            pngFilename = spec['filename']+'_plot.png'
             ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=spec["header"]['OBJNAME'], alpha=1, color="black", lw=self._conf['line_width']) 
             plt.tight_layout(pad=1, w_pad=0, h_pad=0)
-            plt.savefig(pngFilename, dpi=300)
-            plt.savefig(pngLRFilename, dpi=150)
+            dpi = self._conf['dpi'] if 'dpi' in self._conf else 150
+            plt.savefig(pngFilename, dpi=dpi)
             logging.info('\U0001F4C8 Plot %s > save as %s' % (spec["basename"], pngFilename))
             plt.show()
             
