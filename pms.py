@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 from specutils import Spectrum1D
 
-__version__ = 1.1
+__version__ = 1.2
 
 
 
@@ -29,6 +29,7 @@ class PlotMySpec():
     _compare_mode = False
     _crop = []
     _conf = {}
+    _offset = 0
     _balmer_lines = {
 		"Hα" : 6562.82,
 		"Hβ" : 4861.33,
@@ -44,7 +45,10 @@ class PlotMySpec():
         self._compare_mode = self._conf["compare_mode"]
         if("crop" in self._conf and self._conf["crop"]):
             self._crop = np.array(self._conf["crop"].split(',')).astype(np.float64)
+        if("compare_mode_offset" in self._conf and self._conf["compare_mode_offset"]):
+            self._offset = self._conf["compare_mode_offset"]
 
+        i = 1
         for path in paths:
             f = fits.open(path)
             head_tail = os.path.split(path)
@@ -65,13 +69,14 @@ class PlotMySpec():
             self._lambda1 = spectrum_data["header"]['CRVAL1'] - lambdaStep * xRef
             self._lambda2 = spectrum_data["header"]['CRVAL1'] + lambdaStep * (xlength - xRef)
             #Format dataset into astropy quantities
-            flux= f[0].data * u.Jy
+            flux= (f[0].data + self._offset * (i)) * u.Jy 
             wavelength = np.arange(self._lambda1, self._lambda2, lambdaStep) * u.AA
             # Spectrum construction
             spectrum_data["spec1d"] = Spectrum1D(spectral_axis=wavelength, flux=flux)
             spectrum_data["header"]["DATE-OBS"] = spectrum_data["header"]['DATE-OBS'].split('.')[0]
             
             self._spectums_collection.append(spectrum_data)
+            i+=1
 
     def parsePattern(self, spec, pattern):
         for header_key in spec['header']:
@@ -96,7 +101,8 @@ class PlotMySpec():
         pngLRFilename = self._spectums_collection[0]['filename']+'_group_plot.png'
         for spec in self._spectums_collection:
             label = self.parsePattern(spec, self._conf['label_pattern'])
-            ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=label, alpha=1, lw=self._conf['line_width']) 
+            c = self._conf["compare_mode_color"] if self._conf["compare_mode_color"] else None
+            ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width']) 
         plt.legend() 
         plt.savefig(pngFilename, dpi=300)
         plt.savefig(pngLRFilename, dpi=150)

@@ -16,3 +16,4 @@ spec_file_regex: '_(.+)_(\d+)_(\d+)(.*).fit'
 crop: 0
 compare_mode : 0
 compare_mode_offset : 0
+compare_mode_color: ''
