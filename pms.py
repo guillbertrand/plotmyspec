@@ -48,7 +48,7 @@ class PlotMySpec():
         if("compare_mode_offset" in self._conf and self._conf["compare_mode_offset"]):
             self._offset = self._conf["compare_mode_offset"]
 
-        i = 1
+        i = 0
         for path in paths:
             f = fits.open(path)
             head_tail = os.path.split(path)
@@ -102,10 +102,10 @@ class PlotMySpec():
         for spec in self._spectums_collection:
             label = self.parsePattern(spec, self._conf['label_pattern'])
             c = self._conf["compare_mode_color"] if "compare_mode_color" in self._conf and self._conf["compare_mode_color"] else None
-            if("compare_mode_no_label" in self._conf and self._conf["compare_mode_no_label"]):
-                label = '' 
+            
             ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width']) 
-        plt.legend() 
+        if(not "compare_mode_no_label" in self._conf or not self._conf["compare_mode_no_label"]):
+            plt.legend() 
         plt.savefig(pngFilename, dpi=300)
         plt.savefig(pngLRFilename, dpi=150)
         logging.info('\U0001F4C8 Plot spectrums > save as %s' % (pngFilename))
@@ -126,8 +126,8 @@ class PlotMySpec():
         self._spectrum_subtitle = self.parsePattern(spec, self._conf["subtitle_pattern"])
         
         #Add Graph title
-        plt.suptitle(self._spectrum_title,fontsize=self._conf["title_font_size"], fontweight=0, color='black', x=0.515,y=0.97, fontname =self._conf["font_family"])
-        plt.title(self._spectrum_subtitle,fontsize=self._conf["font_size"], fontweight=0, color='black',y=1.03, fontname = self._conf["font_family"])
+        plt.suptitle(self._spectrum_title,fontsize=self._conf["title_font_size"], fontweight=0, color='black',  fontname =self._conf["font_family"])
+        plt.title(self._spectrum_subtitle,fontsize=self._conf["font_size"], fontweight=0, color='black', fontname = self._conf["font_family"])
 
         #Add X axis label
         ax.set_xlabel(self._conf['x_label'], fontdict=None, labelpad=None, fontname = self._conf["font_family"],size=self._conf["font_size"])
