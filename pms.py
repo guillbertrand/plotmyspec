@@ -101,7 +101,7 @@ class PlotMySpec():
         pngLRFilename = self._spectums_collection[0]['filename']+'_group_plot.png'
         for spec in self._spectums_collection:
             label = self.parsePattern(spec, self._conf['label_pattern'])
-            c = self._conf["compare_mode_color"] if self._conf["compare_mode_color"] else None
+            c = self._conf["compare_mode_color"] if "compare_mode_color" in self._conf and self._conf["compare_mode_color"] else None
             ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width']) 
         plt.legend() 
         plt.savefig(pngFilename, dpi=300)
