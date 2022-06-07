@@ -27,9 +27,6 @@ class PlotMySpec():
     _crop = []
     _conf = {}
     _offset = 0
-    _balmer_lines = {
-		"Halpha" : 6562.82
-	}
 
     def __init__(self, paths, conf):
         self._conf = conf
@@ -132,8 +129,7 @@ class PlotMySpec():
 
         # Plot H alpha lines
         if("show_halpha_line" in self._conf and self._conf["show_halpha_line"]):
-            for name, x in self._balmer_lines.items():
-                plt.axvline(x=x, color='red', linestyle='--', linewidth=0.5)
+            plt.axvline(x=6562.82, color='red', linestyle='--', linewidth=0.5)
 
         # Crop spectrum 
         ax.set_xlim(self._crop[:2])  if(len(self._crop) >= 2) else ax.set_xlim([self._lambda1, self._lambda2])
