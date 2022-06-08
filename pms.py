@@ -84,18 +84,17 @@ class PlotMySpec():
             
     def plotSpecGroupMode(self):
         plt, ax = self.initPlot(self._spectums_collection[0])
-        pngFilename = self._spectums_collection[0]['filename']+'_group_hd_plot.png'
-        pngLRFilename = self._spectums_collection[0]['filename']+'_group_plot.png'
+        pngFilename = self._spectums_collection[0]['filename']+'_group_plot.png'
         for spec in self._spectums_collection:
             label = self.parsePattern(spec, self._conf['label_pattern'])
             c = self._conf["compare_mode_color"] if "compare_mode_color" in self._conf and self._conf["compare_mode_color"] else None
             ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width'])
 
-        if(not "compare_mode_no_label" in self._conf or self._conf["compare_mode_no_label"] == 0):
+        if(not "compare_mode_no_label" in self._conf or self._conf["compare_mode_no_label"] != 1):
             plt.legend() 
 
-        plt.savefig(pngFilename, dpi=300)
-        plt.savefig(pngLRFilename, dpi=150)
+        dpi = self._conf['dpi'] if 'dpi' in self._conf else 150
+        plt.savefig(pngFilename, dpi=dpi)
         logging.info('\U0001F4C8 Plot spectrums > save as %s' % (pngFilename))
         plt.show()
 
