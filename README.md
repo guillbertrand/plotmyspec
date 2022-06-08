@@ -1,5 +1,5 @@
 # PlotMySpec
-Small script to __plot fits spectrums__ using Python and Matplotlib
+Small script to __plot fits spectra__ using Python and Matplotlib
 
 ![11cam spectrum](https://guillaumebertrand.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fb0ab911c-ebf2-485b-90cc-7abda355c68b%2F_11cam_20220516_92_plot.png?table=block&id=8c44c4d1-9b7f-418f-b6b9-56ad589a4f26&spaceId=7d247eda-d75c-46b1-bab6-a26d366d8605&width=2000&userId=&cache=v2)
 
@@ -34,14 +34,14 @@ compare_mode : 0
 compare_mode_offset : 0
 ```
 
-## Plot one or more spectrums on distincts graphs
+## Plot one or more spectra on distincts graphs
 
 ```bash
 $ python pms.py /Volumes/Samsung_T5/2022-01-14/ 
 
 - 🚀 PlotMySpec 1.1 - Start 🚀
 - ✨ Load configuration file 🔧  pms.config.yaml
-- 📁 4 spectrums files found !
+- 📁 4 spectra files found !
 - 🖥 ❌ Unable to process _phecda_20220513_912_2D.fits
 - 🖥 ✅ Process _phecda_20220513_912.fits
 - 🖥 ❌ Unable to process _hd123299_20220513_979_2D.fits
@@ -50,7 +50,7 @@ $ python pms.py /Volumes/Samsung_T5/2022-01-14/
 - 📈 Plot _hd123299_20220513_979.fits > save as /Volumes/Samsung_T5/ASTRO/Starex/2022-05-14/_hd123299_20220513_979_hd_plot.png
 ```
 
-## Plot multiple spectrums on the same graph
+## Plot multiple spectra on the same graph
 
 Set __compare_mode=1__ in your configuration file.
 
@@ -59,7 +59,7 @@ $ python pms.py /Volumes/Samsung_T5/2022-01-14/
 
 - 🚀 PlotMySpec 1.1 - Start 🚀
 - ✨ Load configuration file 🔧  /Volumes/Samsung_T5/ASTRO/Starex/mizar/pms.config.yaml
-- 📁 7 spectrums files found !
+- 📁 7 spectra files found !
 - 🖥 ✅ Process @m1.fits
 - 🖥 ✅ Process @m2.fits
 - 🖥 ✅ Process @m3.fits
@@ -67,7 +67,7 @@ $ python pms.py /Volumes/Samsung_T5/2022-01-14/
 - 🖥 ✅ Process @m5.fits
 - 🖥 ✅ Process @m6.fits
 - 🖥 ✅ Process @m7.fits
-- 📈 Plot spectrums > save as /Volumes/Samsung_T5/ASTRO/Starex/mizar/@m1_group_hd_plot.png
+- 📈 Plot spectra > save as /Volumes/Samsung_T5/ASTRO/Starex/mizar/@m1_group_hd_plot.png
 ```
 
-![multiple spectrums](http://www.astrosurf.com/uploads/monthly_2022_05/_sheliak_20220520_956_group_plot.png.2991b5a388ae1a37891d57211ca967dc.png)
+![multiple spectra](http://www.astrosurf.com/uploads/monthly_2022_05/_sheliak_20220520_956_group_plot.png.2991b5a388ae1a37891d57211ca967dc.png)

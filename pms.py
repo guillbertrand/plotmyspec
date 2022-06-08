@@ -15,13 +15,13 @@ __version__ = 1.2
 ''' 
 PlotMySpec 
 ----------
-Small script to plot fits spectrums using Python and Matplotlib
+Small script to plot fits spectra using Python and Matplotlib
 ----------
 '''
 class PlotMySpec():
     _spectrum_title = ''
     _spectrum_subtitle = ''
-    _spectrums_path = []
+    _spectra_path = []
     _spectums_collection = []
     _compare_mode = False
     _crop = []
@@ -95,7 +95,7 @@ class PlotMySpec():
 
         dpi = self._conf['dpi'] if 'dpi' in self._conf else 150
         plt.savefig(pngFilename, dpi=dpi)
-        logging.info('\U0001F4C8 Plot spectrums > save as %s' % (pngFilename))
+        logging.info('\U0001F4C8 Plot spectra > save as %s' % (pngFilename))
         plt.show()
 
     def initPlot(self, spec):
@@ -192,7 +192,7 @@ if __name__ == '__main__':
     if not len(specs):
         logging.info('\U0001F4C1 Error : 0 spectrum file found !')
     else:
-        logging.info('\U0001F4C1 %d spectrums files found !' % (len(specs)))
+        logging.info('\U0001F4C1 %d spectra files found !' % (len(specs)))
         # Run PlotMySpec
         smp = PlotMySpec(specs, conf)
         smp.run()
