@@ -4,8 +4,28 @@ import astropy.units as u
 from numpy import arange
 from datetime import date
 
-
 def binarySystemObservation(obj, filename, period, jd0, step=0.05):
+    """
+    Returns the dates of the next possible observations 
+    for all phases (according to the step) of the period (P)
+
+    Parameters:
+    obj (str): Object name
+    filename (str): Path of your time.lst file from ISIS
+                    example time.lst : 
+                            @m9 -0.318175
+                            @m1 0
+                            @m2 0.194897
+                            @m3 0.340229
+ 
+    period (float): Perdiod P of the object
+    jd0 (float): First julian date of observation
+    step: size of step for increment the phase 
+
+    Returns:
+    Log results 
+
+    """
     logging.info('\U00002728 Start scan for %s period (%s days)' % (obj, period))
     data = []
     results = []
@@ -42,22 +62,6 @@ def findNextDateByPhase(period, phase, jd0, step):
             return t
 
 if __name__ == '__main__':
-
-    # Path of your time.lst file from ISIS
-    # example time.lst : 
-    # @m9 -0.318175
-    # @m1 0
-    # @m2 0.194897
-    # @m3 0.340229
-    # @m4 0.392226
-    # @m5 0.438418
-    # @m6 0.485914
-    # @m7 0.534944
-    # @m8 0.633233
-    # @m9 0.681825
-    # @m1 1
-    
-
     FORMAT = '- %(message)s'
     logging.basicConfig(level=logging.INFO, format=FORMAT)
 
