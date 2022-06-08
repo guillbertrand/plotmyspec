@@ -38,7 +38,6 @@ def binarySystemObservation(obj, filename, period, jd0, step=0.05):
     for i in arange(0,1,step):
         res = None
         for d in data:
-            print(d, i, d==i)
             if(d==i):
                 res = d
                 break
