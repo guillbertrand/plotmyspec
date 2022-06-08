@@ -27,7 +27,8 @@ def binarySystemObservation(obj, filename, period, jd0, step=0.05):
             t = findNextDateByPhase(period, i, jd0, step)
             results.append('\U0000274C Phase = %s : next date => %s' % (round(i,2), t.iso))
     
-    return results
+    for r in results:
+        logging.info(r)
             
 def findNextDateByPhase(period, phase, jd0, step):
     today = date.today()
@@ -70,5 +71,4 @@ if __name__ == '__main__':
     #filename = '/Volumes/Samsung_T5/ASTRO/Starex/alphadra/time2.lst'
     #res = completeBinSystemObservation('alpha dra', filename, 51.4167, 2459713.479468, 3)
 
-    for r in res:
-        logging.info(r)
+ 
