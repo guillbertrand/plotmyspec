@@ -1,7 +1,10 @@
 import logging
 from astropy.time import Time
 import astropy.units as u
-from numpy import arange
+import numpy as np
+import matplotlib.pyplot as plt
+from orbital import utilities
+
 from datetime import date
 
 def binarySystemObservation(obj, filename, period, jd0, step=0.05):
@@ -35,7 +38,7 @@ def binarySystemObservation(obj, filename, period, jd0, step=0.05):
             if(p>=0):
                 data.append(p)
         
-    for i in arange(0,1,step):
+    for i in np.arange(0,1,step):
         res = None
         for d in data:
             if(d==i):
@@ -64,6 +67,7 @@ def binarySystemObservation(obj, filename, period, jd0, step=0.05):
         logging.info(r)
             
 def findNextDateByPhase(period, phase, jd0, step):
+    data = []
     today = date.today()
     time = '%s-%s-%sT%s:%s:00' % (today.strftime("%Y"), today.strftime("%m"), today.strftime("%d"), 23, 00)
     t = Time(time, format='isot', scale='utc')
@@ -74,6 +78,51 @@ def findNextDateByPhase(period, phase, jd0, step):
         if(p > (phase - step) and p < phase + step):
             return t
 
+def getRadialVelocity(t, t0, P, K, e, w, gamma):
+    M = 2 * np.pi *  ((t - t0)%1) / 1   # Mean anomaly
+    E = utilities.eccentric_anomaly_from_mean(e,M, tolerance=0.00001)     # Eccentric anomaly
+    f = utilities.true_anomaly_from_eccentric(e, E)
+    rvs =  (K * (e * np.cos(w) + np.cos(w + f)) + gamma ) 
+    return rvs
+
+def plotRadialVelocityCurve(filename, period, v0, K, e, w):
+    xp = []
+    xjd = []
+    yrv = []
+    ''' with open(filename, newline='\n') as f:
+        for line in f:
+            p = line.rstrip().split(' ')
+            xjd.append(float(p[0]))
+            xp.append(float(p[1]))
+            lambda0 = 6562.82 
+            deltalambda = float(p[2])
+            rv =  (299792.458 * ((deltalambda/lambda0) ** 2 - 1) / ((deltalambda/lambda0) ** 2 + 1)) 
+            yrv.append(rv) '''
+    
+    plt.rcParams['font.size'] = 8
+    plt.rcParams['font.family'] = 'monospace'
+
+    model_x = np.arange(-0.065,1.01, 0.005)
+    model_y = list(map(lambda x: getRadialVelocity(x,-0.065,period,K,e,w,v0), model_x))
+    fig, ax =  plt.subplots(figsize=(11,6))
+
+     #Add X axis label
+    ax.set_xlabel('Phase', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
+
+    #Add Y axis label
+    ax.set_ylabel('Radial velocity [km/s]', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
+    
+    #plt.plot(xjd, yrv, 'ro')
+    plt.plot(model_x, model_y, alpha=1, color="blue", lw=0.6, label="model")
+
+    ax.grid(color='grey', alpha=0.4, linestyle='-', linewidth=0.5, axis='both')
+    plt.legend() 
+
+    plt.xticks(np.arange(0, 1.1, 0.1))
+    plt.yticks(np.arange(-50, 60, 10))
+
+    plt.show()  
+
 if __name__ == '__main__':
     FORMAT = '- %(message)s'
     logging.basicConfig(level=logging.INFO, format=FORMAT)
@@ -81,11 +130,14 @@ if __name__ == '__main__':
     logging.info('\U0001F680 Planning observations of a binary system - Start \U0001F680')
 
     # Run for mizar
-    filename = '/Volumes/Samsung_T5/ASTRO/Starex/mizar/time2.lst'
-    res = binarySystemObservation('mizar', filename, 20.53835, 2459720.381331, 0.045)
+    #filename = '/Volumes/Samsung_T5/ASTRO/Starex/mizar/time2.lst'
+    #res = binarySystemObservation('mizar', filename, 20.53835, 2459720.381331, 0.045)
 
     # Run for alpha dra
     #filename = '/Volumes/Samsung_T5/ASTRO/Starex/alphadra/time2.lst'
-    #res = completeBinSystemObservation('alpha dra', filename, 51.4167, 2459713.479468, 3)
+    #res = binarySystemObservation('alpha dra', filename, 51.4167, 2459713.479468, 0.1)
 
- 
+    # Run plot radial velocity for alpha dra
+    filename = '/Volumes/Samsung_T5/ASTRO/Starex/alphadra/radial.lst'
+    plotRadialVelocityCurve(filename, 51.440, -13.5, -47.48, 0.426, -21.80)
+    
