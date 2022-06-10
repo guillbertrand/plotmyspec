@@ -78,14 +78,16 @@ def findNextDateByPhase(period, phase, jd0, step):
         if(p > (phase - step) and p < phase + step):
             return t
 
-def getRadialVelocity(t, t0, P, K, e, w, gamma):
-    M = 2 * np.pi *  ((t - t0)%1) / 1   # Mean anomaly
-    E = utilities.eccentric_anomaly_from_mean(e,M, tolerance=0.00001)     # Eccentric anomaly
-    f = utilities.true_anomaly_from_eccentric(e, E)
-    rvs =  (K * (e * np.cos(w) + np.cos(w + f)) + gamma ) 
-    return rvs
+def getRadialVelocity(t, t0, P, K, e, w, v0):
+    # Mean anomaly
+    M = 2 * np.pi *  ((t - t0)%1) / 1   
+    # Eccentric anomaly
+    E = utilities.eccentric_anomaly_from_mean(e,M, tolerance=0.00001)   
+    # True anomaly
+    f = utilities.true_anomaly_from_eccentric(e, E) 
+    return (K * (e * np.cos(w) + np.cos(w + f)) + v0 ) 
 
-def plotRadialVelocityCurve(filename, period, v0, K, e, w):
+def plotRadialVelocityCurveSB1(filename, P, v0, K, e, w):
     xp = []
     xjd = []
     yrv = []
@@ -103,7 +105,7 @@ def plotRadialVelocityCurve(filename, period, v0, K, e, w):
     plt.rcParams['font.family'] = 'monospace'
 
     model_x = np.arange(-0.065,1.01, 0.005)
-    model_y = list(map(lambda x: getRadialVelocity(x,-0.065,period,K,e,w,v0), model_x))
+    model_y = list(map(lambda x: getRadialVelocity(x,-0.065,P,K,e,w,v0), model_x))
     fig, ax =  plt.subplots(figsize=(11,6))
 
      #Add X axis label
@@ -139,5 +141,5 @@ if __name__ == '__main__':
 
     # Run plot radial velocity for alpha dra
     filename = '/Volumes/Samsung_T5/ASTRO/Starex/alphadra/radial.lst'
-    plotRadialVelocityCurve(filename, 51.440, -13.5, -47.48, 0.426, -21.80)
+    plotRadialVelocityCurveSB1(filename, 51.440, -13.5, -47.48, 0.426, -21.80)
     
