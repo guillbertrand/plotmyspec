@@ -87,43 +87,61 @@ def getRadialVelocity(t, t0, P, K, e, w, v0):
     f = utilities.true_anomaly_from_eccentric(e, E) 
     return (K * (e * np.cos(w) + np.cos(w + f)) + v0 ) 
 
-def plotRadialVelocityCurveSB1(filename, P, v0, K, e, w):
+def getRv(deltalambda, lambda0 = 6562.82):
+    return  (299792.458 * ((deltalambda/lambda0) ** 2 - 1) / ((deltalambda/lambda0) ** 2 + 1))
+
+def plotRadialVelocityCurveSB1(filename, P, v0, K, e, w, jd0):
     xp = []
     xjd = []
     yrv = []
-    ''' with open(filename, newline='\n') as f:
+    yerr = []
+    with open(filename, newline='\n') as f:
         for line in f:
             p = line.rstrip().split(' ')
             xjd.append(float(p[0]))
             xp.append(float(p[1]))
             lambda0 = 6562.82 
-            deltalambda = float(p[2])
-            rv =  (299792.458 * ((deltalambda/lambda0) ** 2 - 1) / ((deltalambda/lambda0) ** 2 + 1)) 
-            yrv.append(rv) '''
+            deltalambda = (float(p[2])+float(p[3])+float(p[4]))/3
+            rv = getRv(deltalambda)
+            yrv.append(rv) 
+            deltalambda_min = min(np.float64(p[2:]))
+            rv_min = getRv(deltalambda_min)
+            deltalambda_max = max(np.float64(p[2:]))
+            rv_max = getRv(deltalambda_max)
+            err = rv_max - rv_min
+            yerr.append(err)
     
     plt.rcParams['font.size'] = 8
     plt.rcParams['font.family'] = 'monospace'
 
-    model_x = np.arange(-0.065,1.01, 0.005)
-    model_y = list(map(lambda x: getRadialVelocity(x,-0.065,P,K,e,w,v0), model_x))
+    model_x = np.arange(-0.5,1.01, 0.005)
+    model_y = list(map(lambda x: getRadialVelocity(x,jd0,P,K,e,w,v0), model_x))
     fig, ax =  plt.subplots(figsize=(11,6))
 
-     #Add X axis label
+    #Add Graph title
+    plt.suptitle(r"$\bf{HD123299}$" + " - α Dra - Phased radial-velocities - 4 observations collected from April to June 2022",fontsize=9, fontweight=0, color='black' )
+    plt.title("SkyWatcher refractor D=72mm f/6 + Star'Ex (2400 l/mm, 80x125, 10 μm slit) + ASI 183MM",fontsize=8, fontweight=0, color='black')
+
+    #Add X axis label
     ax.set_xlabel('Phase', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
 
     #Add Y axis label
     ax.set_ylabel('Radial velocity [km/s]', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
     
-    #plt.plot(xjd, yrv, 'ro')
-    plt.plot(model_x, model_y, alpha=1, color="blue", lw=0.6, label="model")
+    plt.errorbar(xp, yrv, yerr=yerr, color="black",fmt="o",lw=0.8)
+    plt.plot(model_x, model_y, alpha=1, color="red", lw=0.5, label='"official" curve parameters - 2017 - arXiv:1707.05090')
 
     ax.grid(color='grey', alpha=0.4, linestyle='-', linewidth=0.5, axis='both')
+
     plt.legend() 
 
-    plt.xticks(np.arange(0, 1.1, 0.1))
-    plt.yticks(np.arange(-50, 60, 10))
+    plt.tight_layout(pad=1, w_pad=0, h_pad=0)
 
+    plt.xticks(np.arange(-0.5, 1.1, 0.1))
+    plt.yticks(np.arange(-50, 60, 10))
+    plt.savefig('hd123299-phased-radial-velocities.png', dpi=300)
     plt.show()  
+    
 
 if __name__ == '__main__':
     FORMAT = '- %(message)s'
@@ -132,14 +150,14 @@ if __name__ == '__main__':
     logging.info('\U0001F680 Planning observations of a binary system - Start \U0001F680')
 
     # Run for mizar
-    #filename = '/Volumes/Samsung_T5/ASTRO/Starex/mizar/time2.lst'
-    #res = binarySystemObservation('mizar', filename, 20.53835, 2459720.381331, 0.045)
+    filename = '/Volumes/Samsung_T5/ASTRO/Starex/mizar/time2.lst'
+    res = binarySystemObservation('mizar', filename, 20.53835, 2459720.381331, 0.045)
 
     # Run for alpha dra
-    #filename = '/Volumes/Samsung_T5/ASTRO/Starex/alphadra/time2.lst'
-    #res = binarySystemObservation('alpha dra', filename, 51.4167, 2459713.479468, 0.1)
+    filename = '/Volumes/Samsung_T5/ASTRO/Starex/alphadra/time2.lst'
+    res = binarySystemObservation('alpha dra', filename, 51.4167, 2459713.479468, 0.05)
 
     # Run plot radial velocity for alpha dra
-    filename = '/Volumes/Samsung_T5/ASTRO/Starex/alphadra/radial.lst'
-    plotRadialVelocityCurveSB1(filename, 51.440, -13.5, -47.48, 0.426, -21.80)
+    filename = 'sandbox/radial.lst'
+    plotRadialVelocityCurveSB1(filename, 51.440, -13.5, -47.48, 0.426, -21.80, 0.115)
     
