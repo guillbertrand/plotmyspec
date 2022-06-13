@@ -69,10 +69,10 @@ def binarySystemObservation(obj, filename, period, jd0, step=0.05):
                 res = d
                 break
         
+        t = findNextDateByPhase(period, i, jd0, step)
         if(res != None):
-            results.append('\U00002705 Phase = %f : ok => %s' % (round(i,2), res))
+            results.append('\U00002705 Phase = %f : next date=> %s (ok : %s)' % ( round(i,2),t.iso, res))
         else:
-            t = findNextDateByPhase(period, i, jd0, step)
             results.append('\U0000274C Phase = %f : next date => %s' % (round(i,2), t.iso))
     
     for r in results:
@@ -85,10 +85,10 @@ def findNextDateByPhase(period, phase, jd0, step):
     t = Time(time, format='isot', scale='utc')
     res = None
     while not res:
-        t = t + 1*u.d 
         p =  (t.jd-jd0) % period / period
         if(p > (phase - step) and p < phase + step):
             return t
+        t = t + 1*u.d 
 
 def getPhase(jd0, period, jd):
     return (jd-jd0) % period / period
@@ -99,7 +99,7 @@ def getBinSysData(specs, period):
         f = fits.open(s)
         header = f[0].header
         jd = header['JD-OBS']
-        obs[jd] = {'fits':s}
+        obs[jd] = {'fits':s, 'centroid':float(header['S_CAL'])}
 
     jd0 = min(obs.keys())
     for jd in obs:
@@ -235,7 +235,7 @@ def plotRadialVelocityCurveSB1_2(specs, P, v0, K, e, w, jd0):
     plt.rcParams['font.size'] = 8
     plt.rcParams['font.family'] = 'monospace'
 
-    model_x = np.arange(-0.5,1.01, 0.005)
+    model_x = np.arange(-0.1,1.01, 0.005)
     model_y = list(map(lambda x: getRadialVelocity(x,jd0,P,K,e,w,v0), model_x))
     fig, ax =  plt.subplots(figsize=(11,6))
 
@@ -249,7 +249,7 @@ def plotRadialVelocityCurveSB1_2(specs, P, v0, K, e, w, jd0):
     #Add Y axis label
     ax.set_ylabel('Radial velocity [km/s]', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
     
-    plt.plot(xp, yrv, "bo",lw=0.8)
+    plt.plot(xp, yrv, "o", color="black", lw=0.8)
     plt.plot(model_x, model_y, alpha=1, color="red", lw=0.5, label='"official" curve parameters - 2017 - arXiv:1707.05090')
 
     ax.grid(color='grey', alpha=0.4, linestyle='-', linewidth=0.5, axis='both')
@@ -258,7 +258,7 @@ def plotRadialVelocityCurveSB1_2(specs, P, v0, K, e, w, jd0):
 
     plt.tight_layout(pad=1, w_pad=0, h_pad=0)
 
-    plt.xticks(np.arange(-0.5, 1.1, 0.1))
+    plt.xticks(np.arange(-0.1, 1.1, 0.1))
     plt.yticks(np.arange(-50, 60, 10))
     plt.savefig('sandbox/alphadra/hd123299-phased-radial-velocities-auto.png', dpi=300)
     plt.show()  
@@ -271,25 +271,25 @@ if __name__ == '__main__':
     logging.info('\U0001F680 Planning observations of a binary system - Start \U0001F680')
 
     # Run for mizar
-    #filename = '/Volumes/Samsung_T5/ASTRO/Starex/mizar/time2.lst'
-    #res = binarySystemObservation('mizar', filename, 20.53835, 2459720.381331, 0.045)
+    filename = 'D:\\ASTRO\\Starex\\mizar\\time2.lst'
+    res = binarySystemObservation('mizar', filename, 20.53835, 2459720.381331, 0.045)
 
     # Run for alpha dra
-    #filename = 'sandbox/alphadra/time2.lst'
-    #res = binarySystemObservation('alpha dra', filename, 51.4167, 2459713.479468, 0.05)
+    filename = 'D:\\ASTRO\\Starex\\alphadra\\time2.lst'
+    res = binarySystemObservation('alpha dra', filename, 51.4167, 2459713.479468, 0.05)
 
     # Run plot radial velocity for alpha dra
-    #filename = 'sandbox/alphadra/radial.lst'
+    #filename = "D:\\ASTRO\\Starex\\alphadra\\radial2.lst"
     #plotRadialVelocityCurveSB1(filename, 51.440, -13.5, -47.48, 0.426, -21.80, 0.115)
 
     #
 
     # find spec files 
     specs = []
-    wdir = 'sandbox/alphadra/'
+    wdir = 'D:\\ASTRO\\Starex\\alphadra\\'
     for root, dirs, files in os.walk(wdir):
         for file in files:
-            regex = re.compile('ok_(.+)_(\d+)_(\d+)(.*).fit')
+            regex = re.compile('vr_(.+)_(\d+)_(\d+)(.*).fit')
             if(re.match(regex, file)):
                 specs.append(os.path.join(wdir, file))
     if not len(specs):
@@ -298,10 +298,8 @@ if __name__ == '__main__':
         logging.info('\U0001F4C1 %d spectra files found !' % (len(specs)))
         data = getBinSysData(specs, 51.440)
         for key, value in data.items():
-            c = findCentroid(value)
-            data[key]['rv'] = getRv(c)
-            data[key]['centroid'] = c
-        plotRadialVelocityCurveSB1_2(data, 51.440, -13.5, -47.48, 0.426, -21.80, 0.115)
+            data[key]['rv'] = getRv(value['centroid'])
+        plotRadialVelocityCurveSB1_2(data, 51.440, -13.5, -47.48, 0.426, -21.80, 0.1)
 
         print('----')
         for key, value in data.items():
