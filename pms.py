@@ -22,7 +22,7 @@ class PlotMySpec():
     _spectrum_title = ''
     _spectrum_subtitle = ''
     _spectra_path = []
-    _spectums_collection = []
+    _spectums_collection = {}
     _compare_mode = False
     _crop = []
     _conf = {}
@@ -63,7 +63,7 @@ class PlotMySpec():
             spectrum_data["spec1d"] = Spectrum1D(spectral_axis=wavelength, flux=flux)
             spectrum_data["header"]["DATE-OBS"] = spectrum_data["header"]['DATE-OBS'].split('.')[0]
             
-            self._spectums_collection.append(spectrum_data)
+            self._spectums_collection[spectrum_data["header"]["DATE-OBS"]] = spectrum_data
             i+=1
 
     def parsePattern(self, spec, pattern):
@@ -72,7 +72,7 @@ class PlotMySpec():
         return pattern
 
     def plotSpec(self):
-        for spec in self._spectums_collection:
+        for spec in self._spectums_collection.values():
             plt, ax = self.initPlot(spec)
             pngFilename = spec['filename']+'_plot.png'
             ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=spec["header"]['OBJNAME'], alpha=1, color="black", lw=self._conf['line_width']) 
@@ -83,9 +83,10 @@ class PlotMySpec():
             plt.show()
             
     def plotSpecGroupMode(self):
-        plt, ax = self.initPlot(self._spectums_collection[0])
-        pngFilename = self._spectums_collection[0]['filename']+'_group_plot.png'
-        for spec in self._spectums_collection:
+        items = list(self._spectums_collection.values())
+        plt, ax = self.initPlot(items[0])
+        pngFilename = items[0]['filename']+'_group_plot.png'
+        for key, spec in sorted(self._spectums_collection.items()):
             label = self.parsePattern(spec, self._conf['label_pattern'])
             c = self._conf["compare_mode_color"] if "compare_mode_color" in self._conf and self._conf["compare_mode_color"] else None
             ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width'])

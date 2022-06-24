@@ -95,15 +95,14 @@ def findNextDateByPhase(period, phase, jd0, step):
 def getPhase(jd0, period, jd):
     return (jd-jd0) % period / period
 
-def getBinSysData(specs, period):
+def getBinSysData(specs, period, jd0):
     obs = {}
     for s in specs:
         f = fits.open(s)
         header = f[0].header
         jd = header['JD-OBS']
-        obs[jd] = {'fits':s, 'centroid':float(header['S_CAL']) }
+        obs[jd] = {'fits':s, 'centroid1':float(header['S_CAL'].split(';')[0]), 'centroid2':float(header['S_CAL'].split(';')[1]) }
 
-    jd0 = min(obs.keys())
     for jd in obs:
         phase = getPhase(float(jd0), period, float(jd))
         obs[jd]['phase'] = phase
@@ -131,7 +130,7 @@ def initPlot():
     fig, ax =  plt.subplots(figsize=(9,6))
 
     #Add Graph title
-    plt.suptitle(r"$\bf{α}$" + " " + r"$\bf{Dra}$" +" - HD123299 - Phased radial-velocities - %s observations collected from April to June 2022" % len(specs),fontsize=9, fontweight=0, color='black' )
+    plt.suptitle(r"$\bf{Mizar}$" +" - HD116656 - Phased radial-velocities - %s observations collected from May to June 2022" % len(specs),fontsize=9, fontweight=0, color='black' )
     plt.title("SkyWatcher refractor D=72mm f/6 + Star'Ex (2400 l/mm, 80x125, 10 μm slit) + ASI 183MM",fontsize=8, fontweight=0, color='black')
 
     #Add X axis label
@@ -144,26 +143,25 @@ def initPlot():
 
     return (fig, ax)
 
-def plotRadialVelocityCurve(v0, K, e, w, jd0,color="red", label="", lw=0.5, alpha=1):
-    model_x = np.arange(-0.1,1.3, 0.005)
+def plotRadialVelocityCurve(v0, K, e, w, jd0,style="-",color="red", label="", lw=0.5, alpha=1):
+    model_x = np.arange(0,1.1, 0.005)
     model_y = list(map(lambda x: getRadialVelocity(x,jd0,K,e,w,v0), model_x))
-    plt.plot(model_x, model_y, color, alpha=alpha, lw=lw, label=label)
+    plt.plot(model_x, model_y, style, alpha=alpha, lw=lw, label=label, color=color)
 
-def plotRadialVelocityDotsFromData(specs, color):
+def plotRadialVelocityDotsFromData(specs, color, period):
     xp = []
     xjd = []
-    yrv = []
+    yrv1 = []
+    yrv2 = []
    
     for jd, s in specs.items():
         xjd.append(jd)
         xp.append(s['phase'])
-        yrv.append(s['rv']) 
+        yrv1.append(s['rv1']) 
+        yrv2.append(s['rv2']) 
     
-    xp.append(1)
-    xjd.append(min(xjd))
-    yrv.append(specs[min(xjd)]['rv'])
-    
-    plt.plot(xp, yrv, color, lw=0.8)
+    plt.plot(xp, yrv1, color, lw=0.8)
+    plt.plot(xp, yrv2, color, lw=0.8)
  
    
 def saveAndShowPlot():
@@ -171,9 +169,9 @@ def saveAndShowPlot():
 
     plt.tight_layout(pad=1, w_pad=0, h_pad=0)
 
-    plt.xticks(np.arange(-0.1, 1.3, 0.1))
-    plt.yticks(np.arange(-50, 60, 10))
-    plt.savefig('sandbox/alphadra/hd123299-phased-radial-velocities.png', dpi=300)
+    plt.xticks(np.arange(0, 1.1, 0.1))
+    plt.yticks(np.arange(-90, 90, 10))
+    plt.savefig('sandbox/mizar/mizar-phased-radial-velocities2.png', dpi=300)
     plt.show()  
       
 
@@ -181,56 +179,64 @@ if __name__ == '__main__':
     FORMAT = '- %(message)s'
     logging.basicConfig(level=logging.INFO, format=FORMAT)
 
-    logging.info('\U0001F680 Planning observations of a binary system - Start \U0001F680')
-
-    # Run for mizar
-    filename = 'D:\\ASTRO\\Starex\\mizar\\time2.lst'
-    filename = '/Volumes/Samsung_T5/ASTRO/Starex/mizar/time2.lst'
-    res = binarySystemObservation('mizar', filename, 20.53835, 2459720.381331, 0.045)
-
-    # Run for alpha dra
-    filename = 'D:\\ASTRO\\Starex\\alphadra\\time2.lst'
-    filename = '/Volumes/Samsung_T5/ASTRO/Starex/alphadra/time2.lst'
-    res = binarySystemObservation('alpha dra', filename, 51.4167, 2459713.479468, 0.05)
-
-    # Run plot radial velocity for alpha dra
-    #filename = "D:\\ASTRO\\Starex\\alphadra\\radial2.lst"
-    #plotRadialVelocityCurveSB1(filename, 51.440, -13.5, -47.48, 0.426, -21.80, 0.115)
-
     #
 
-    # find spec files 
+    period = 20.53835
+    jd0 = 2459720.381331
+
+    #find spec files 
     specs = []
-    wdir = 'D:\\ASTRO\\Starex\\alphadra\\'
-    wdir = '/Volumes/Samsung_T5/ASTRO/Starex/alphadra/'
+    wdir = 'D:\\ASTRO\\Starex\\mizar\\'
+    wdir = 'sandbox/mizar/'
     for root, dirs, files in os.walk(wdir):
         for file in files:
-            regex = re.compile('vr_(.+)_(\d+)_(\d+)(.*).fit')
+            regex = re.compile('rv(\d+).fit')
             if(re.match(regex, file)):
                 specs.append(os.path.join(wdir, file))
     if not len(specs):
         logging.info('\U0001F4C1 Error : 0 spectrum file found !')
     else:
         logging.info('\U0001F4C1 %d spectra files found !' % (len(specs)))
-        data = getBinSysData(specs, 51.440)
+        data = getBinSysData(specs, period, jd0)
         for key, value in data.items():
-            data[key]['rv'] = getRv(value['centroid'])
-    
+            data[key]['rv1'] = getRv(value['centroid1'])
+            data[key]['rv2'] = getRv(value['centroid2'])
+
         print('---- start plotRadialVelocityCurve --- ')
         for key, value in data.items():
-            print('jd : %s  phase : %s  centroid : %s   rv : %s' % (key, round(value['phase'],3), round(value['centroid'],3), round(value['rv'],3)))
-    
-        initPlot()
-        
-        plotRadialVelocityCurve(-13.5, 47.48, 0.426, 21.80, 0.135, '--',  'R. Bischoff, et al.  - Jul, 2017',1)
-        plotRadialVelocityCurve(-13, 48.512, 0.4229, 21.28, 0.135, '--',  'K. Pavlovski, et al. - Nov, 2021',1)
-        plotRadialVelocityCurve(-15.597, 40.046, 0.35345, 22.8123, 0.135, 'k--', 'G. Bertrand          - Jul, 2022', 0.8, 0.8)
-        plotRadialVelocityDotsFromData(data, 'ko')
-    
-        saveAndShowPlot()
+            print('jd : %s  phase : %s  centroid 1 : %s, centroid 2 : %s, rv1 : %s, rv2 : %s' % (key, round(value['phase'],3), round(value['centroid1'],3), round(value['centroid2'],3), round(value['rv1'],3), round(value['rv2'],3)))
 
-    # from binarystarsolve.binarystarsolve import StarSolve
-    # params, err, cov = StarSolve(data_file = "sandbox/alphadra/myRVdata.txt", star = "primary", Period = 51.440, covariance = True, graphs=True)
-    # plt.show()
-    # # [γ, K, ω, e, T0, P, a, f(M)]
-    # print(params, err)
+        print('---- start output 1 --- ')
+        with open('sandbox/mizar/myRVdata2.txt', 'w') as f: 
+            for key, value in data.items():
+                if(value['phase']>0.6):
+                    output = '%s %s %s' % (key-2400000, round(value['rv2'],3),round(value['rv1'],3))
+                else:
+                    output = '%s %s %s' % (key-2400000, round(value['rv1'],3),round(value['rv2'],3))
+                f.write(output+'\n')
+                print(value['fits'], output)
+
+
+    initPlot()
+    v0 = 0.625
+    plotRadialVelocityCurve(-5.6, 68.85, 0.542, 104.16, v0, '-', 'red',  'Primary - Budovicová et al. - 2004',1)
+    plotRadialVelocityCurve(-5.6, -65.51, 0.542, 104.16, v0, '--', 'red',  'Secondary - Budovicová et al. - 2004',1)
+    
+    
+
+    from binarystarsolve.binarystarsolve import StarSolve
+    params, err = StarSolve(data_file = "sandbox/mizar/myRVdata2.txt", star = "both", Pguess=period,  covariance = False, graphs=False)
+  
+    # [γ, K, ω, e, T0, P, a, f(M)]
+    print(params[0])
+    print(params[1])
+
+    plotRadialVelocityCurve(params[1][0], params[1][1], params[1][3], params[1][2], v0+0.005, '--', 'black', 'Primary - G. Bertrand - Jun, 2022', 0.8, 0.8)
+    plotRadialVelocityCurve(params[0][0], params[0][1], params[0][3], params[0][2], v0+0.005, '-', 'black',  'Secondary - G. Bertrand - Jun, 2022', 0.8, 0.8)
+
+    
+    plotRadialVelocityDotsFromData(data, 'ko', period)
+    saveAndShowPlot()
+
+    print(err[0])
+    print(err[1])
