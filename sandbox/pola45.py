@@ -3,6 +3,8 @@ import os
 import numpy as np
 from astropy import units as u #units
 from astropy.io import fits
+from astropy.time import Time
+from datetime import date
 import astropy.wcs as fitswcs #wcs
 import matplotlib.pyplot as plt
 from specutils import Spectrum1D, SpectralRegion 
@@ -60,15 +62,22 @@ def getPhase(jd, jd0, period):
 
 path = '/Volumes/Samsung_T5/Astro/starex/corcaroli/'
 
-l1_name = '_corcarolig1.fits'
-l2_name = '_corcarolig2.fits'
-r1_name = '_corcarolid1.fits'
-r2_name = '_corcarolid2.fits'
+l1_name = '2_g1.fits'
+l2_name = '2_g2.fits'
+r1_name = '2_d1.fits'
+r2_name = '2_d2.fits'
 
 lambda_minmaxstep = (6546, 6582,0.0312)
 phase_eph_jd0 = 2419869.720  
 phase_eph_P = 5.46939
+''' 
+today = date.today()
+time = '%s-%s-%sT%s:%s:00' % ('2022', '07', '02', '21', '00')
+t = Time(time, format='isot', scale='utc')
 
+phase = getPhase(float(t.jd), phase_eph_jd0, phase_eph_P)
+print(phase)
+exit() '''
 l1, jd = createSpectrum1D(os.path.join(path, l1_name))
 l2, jd = createSpectrum1D(os.path.join(path, l2_name))
 r1, jd = createSpectrum1D(os.path.join(path, r1_name))
@@ -87,5 +96,6 @@ ax.set_xlim((lambda_minmaxstep[0],lambda_minmaxstep[1]))
 ax.set_ylim((0,1.4))
 ax2.set_ylim((-0.1,0.55))
 plt.legend([l1, l2, l3], ['I/Ic', 'V/Ic', 'N/Ic'])
-plt.savefig('sandbox/alpha2CVn-magnetic-field-detection.png', dpi=300)
+plt.savefig('sandbox/alpha2CVn-magnetic-field-detection-2.png', dpi=300)
 plt.show()
+
