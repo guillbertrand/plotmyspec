@@ -47,7 +47,7 @@ def plotLongitudinalMeanField(aBl):
 def initPlot(title):
     plt.rcParams['font.size'] = 8
     plt.rcParams['font.family'] = 'monospace'
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(12,6))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8.5,7))
 
     ax1.set_xlabel('Wavelength in Å')
     ax1.set_ylabel('I/Ic')
@@ -55,15 +55,12 @@ def initPlot(title):
     ax2.set_xlabel('Wavelength in Å')
     ax2.set_ylabel('V/Ic')
 
-    ax3.set_xlabel('Wavelength in Å')
-    ax3.set_ylabel('N/Ic')
-
     fig.suptitle(title+"\nSkyWatcher refractor D=72mm f/6 + Star'Ex (2400 l/mm, 80x125, 10 μm slit) + ASI 183MM",fontsize=9, fontweight=0, color='black' )
 
-    return [ax1, ax2, ax3]
+    return [ax1, ax2]
 
-def plotSpectrum1D(ax, spec, color="k-"):
-    return ax.plot(spec.spectral_axis * u.AA, spec.flux, color, alpha=1, lw=0.7) 
+def plotSpectrum1D(ax, spec, label, color="k-", alpha=1):
+    return ax.plot(spec.spectral_axis * u.AA, spec.flux, color, alpha=alpha, lw=0.7, label=label) 
 
 def createSpectrum1D(path):
     file = fits.open(path)  
@@ -202,26 +199,28 @@ if __name__ == '__main__':
     stepI = 0.3
     stepV = 0.11
     for phase, (v, i, n, v_i, n_i, l, r) in results.items():
-        plotSpectrum1D(ax[0], i/4 + (c*stepI))
-        plotSpectrum1D(ax[1], v_i + (c*stepV))
-        plotSpectrum1D(ax[2], n_i + (c*stepV))
+        plotSpectrum1D(ax[0], i/4 + (c*stepI), 'I/Ic')
+        plotSpectrum1D(ax[1], v_i + (c*stepV), 'V/Ic')
+        plotSpectrum1D(ax[1], n_i + (c*stepV), 'N/Ic','b--',0.7)
 
         ax[0].text(6575, 1.06+(c*stepI),r'$\phi$' + ' = '+ "%.3f"%phase, size='medium')
         ax[1].text(6575, 0.025+(c*stepV),r'$\phi$' + ' = '+ "%.3f"%phase, size='medium')
-        ax[2].text(6575, 0.025+(c*stepV),r'$\phi$' + ' = '+ "%.3f"%phase, size='medium')
         c+=1
+        if(c==1):
+            plt.legend() 
 
-    for i in range(0,3,1):
+    for i in range(0,2,1):
         ax[i].set_xlim((lambda_minmaxstep[0],lambda_minmaxstep[1]))
         ax[i].grid(color='grey', alpha=0.2, linestyle='-', linewidth=0.5, axis='both')
 
     ax[0].set_ylim((0.15,4.12))
-    ax[1].set_ylim((-0.12,1.12))
-    ax[2].set_ylim((-0.12,1.12))
+    ax[1].set_ylim((-0.12,1.15))
 
-    #plt.tight_layout(pad=1, w_pad=0.8, h_pad=0)
-    #plt.savefig('sandbox/alpha2CVn-magnetic-field-detection-%s.png' % observations_count, dpi=300)
-    #plt.show()
+    
+
+    plt.tight_layout(pad=1, w_pad=0.8, h_pad=0)
+    plt.savefig('sandbox/alpha2CVn-magnetic-field-detection-%s-bis.png' % observations_count, dpi=300)
+    plt.show()
 
     #plotIZoom(results)
 

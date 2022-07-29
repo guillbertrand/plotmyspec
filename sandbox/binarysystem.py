@@ -184,9 +184,9 @@ if __name__ == '__main__':
     logging.info('\U0001F680 Planning observations of a binary system - Start \U0001F680')
 
     # Run for mizar
-    filename = 'D:\\ASTRO\\Starex\\mizar\\time2.lst'
-    filename = '/Volumes/Samsung_T5/ASTRO/Starex/mizar/time2.lst'
-    res = binarySystemObservation('mizar', filename, 20.53835, 2459720.381331, 0.045)
+    #filename = 'D:\\ASTRO\\Starex\\mizar\\time2.lst'
+    #filename = '/Volumes/Samsung_T5/ASTRO/Starex/mizar/time2.lst'
+    #res = binarySystemObservation('mizar', filename, 20.53835, 2459720.381331, 0.045)
 
     # Run for alpha dra
     filename = 'D:\\ASTRO\\Starex\\alphadra\\time2.lst'

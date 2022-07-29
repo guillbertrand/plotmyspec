@@ -63,7 +63,7 @@ class PlotMySpec():
             spectrum_data["spec1d"] = Spectrum1D(spectral_axis=wavelength, flux=flux)
             spectrum_data["header"]["DATE-OBS"] = spectrum_data["header"]['DATE-OBS'].split('.')[0]
             
-            self._spectums_collection[spectrum_data["header"]["DATE-OBS"]] = spectrum_data
+            self._spectums_collection[spectrum_data["header"]["DATE-OBS"]+str(i)] = spectrum_data
             i+=1
 
     def parsePattern(self, spec, pattern):
