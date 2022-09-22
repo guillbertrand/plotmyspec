@@ -69,17 +69,10 @@ def createSpectrum1D(path):
     wcs_data = fitswcs.WCS(header={'CDELT1': round(header['CDELT1'],4), 'CRVAL1': header['CRVAL1'],
                                 'CUNIT1': 'Angstrom', 'CTYPE1': 'WAVE',
                                 'CRPIX1': header['CRPIX1']})
+
     flux= specdata * u.Jy
     s = Spectrum1D(flux=flux,  wcs=wcs_data)
     return (s, float(header['JD-OBS']))
-
-def getBz2(v, i, g, lam_0):
-    v= v[(lambda_min)*u.AA:(lambda_max)*u.AA]
-    c_0 = -4.67*10**-13
-    v_i = v / i 
-    print(misc.derivative(i.flux, i.spectral_axis))
-    B = (c_0*g*lam_0**2)
-    return B
 
 def getBz(i, v, n, lambda_min, lambda_max, g= 1.0, lambda0 = 6562.8):
     v= v[(lambda_min)*u.AA:(lambda_max)*u.AA]
@@ -108,19 +101,38 @@ def getBz(i, v, n, lambda_min, lambda_max, g= 1.0, lambda0 = 6562.8):
 
     return (Bl, abs(Blerr))
 
-def plotIZoom(data):
+def plotLeftRightIVZoom(data):
     plt.rcParams['font.size'] = 8
     plt.rcParams['font.family'] = 'monospace'
                     
     for phase, (v, i, n, v_i, n_i, l, r) in data.items():
-        fig, ax = plt.subplots(figsize=(8,6))
-        #ax.set_xlim((6562,6563.5))
+        fig, ax = plt.subplots(figsize=(5,5))
+        ax.set_xlim((6558.0,6568.5))
         #ax.set_ylim((.20,.45))
-        plt.plot(l.spectral_axis, l.flux, lw=0.6)
-        plt.plot(r.spectral_axis, r.flux, lw=0.6)
-        plt.show()
 
-def getStrokesParam(l1, l2, r1, r2, lambda_minmaxstep):
+        # left
+        plt.plot(l.spectral_axis, l.flux, "r-", lw=0.6, label="L = left polarization")
+        # right
+        plt.plot(r.spectral_axis, r.flux, "b-", lw=0.6, label="R = right polarization")
+        # v 
+        plt.plot(r.spectral_axis, v.flux*2+.9, "k-", lw=0.6, label="V/Ic x 2 = (L-R)/(L+R) x 2")
+        # n 
+        plt.plot(r.spectral_axis, n.flux*2+.9, "k--", lw=0.6, alpha=0.6, label="Null polarization spectrum")
+
+        # phase
+        ax.text(6558.35, 1.04,r'$\phi$' + ' = '+ "%.3f"%phase, size='medium')
+
+        ax.grid(color='grey', alpha=0.2, linestyle='-', linewidth=0.5, axis='both')
+
+        plt.legend(loc="lower right") 
+
+        plt.tight_layout(pad=1, w_pad=0.8, h_pad=0)
+        plt.savefig('sandbox/alpha2CVn-magnetic-field-detection-individual.png', dpi=300)
+
+        plt.show()
+        break
+
+def getStokesParam(l1, l2, r1, r2, lambda_minmaxstep):
     lambdaMin = 6550
     lambdaMax = 6575
 
@@ -192,7 +204,7 @@ if __name__ == '__main__':
 
         phase = getPhase(jd0, phase_eph_jd0, phase_eph_P)
 
-        results[phase] = getStrokesParam(l1,l2,r1,r2,lambda_minmaxstep)
+        results[phase] = getStokesParam(l1,l2,r1,r2,lambda_minmaxstep)
     
     results = collections.OrderedDict(sorted(results.items(), reverse=True))
     c = 0
