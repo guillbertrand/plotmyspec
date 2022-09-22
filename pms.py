@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 from specutils import Spectrum1D
 
-__version__ = 1.2
+__version__ = 2.0
 
 ''' 
 PlotMySpec 
@@ -26,15 +26,18 @@ class PlotMySpec():
     _compare_mode = False
     _crop = []
     _conf = {}
-    _offset = 0
+    _offset = [0]
 
     def __init__(self, paths, conf):
         self._conf = conf
         self._compare_mode = self._conf["compare_mode"]
         if("crop" in self._conf and self._conf["crop"]):
             self._crop = np.array(self._conf["crop"].split(',')).astype(np.float64)
-        if("compare_mode_offset" in self._conf and self._conf["compare_mode_offset"]):
-            self._offset = self._conf["compare_mode_offset"]
+        if("compare_mode_y_offset" in self._conf and self._conf["compare_mode_y_offset"] != None):
+            if(str(self._conf["compare_mode_y_offset"]).__contains__(';')):
+                self._offset = self._conf["compare_mode_y_offset"].split(';')
+            else:
+                self._offset = [self._conf["compare_mode_y_offset"]]
 
         i = 0
         for path in paths:
@@ -57,8 +60,11 @@ class PlotMySpec():
             self._lambda1 = spectrum_data["header"]['CRVAL1'] - lambdaStep * xRef
             self._lambda2 = spectrum_data["header"]['CRVAL1'] + lambdaStep * (xlength - xRef)
             #Format dataset into astropy quantities
-            flux= (f[0].data + self._offset * (i)) * u.Jy 
-            wavelength = np.arange(self._lambda1, self._lambda2, lambdaStep) * u.AA
+            if(self._offset and len(self._offset)>1):
+                flux= (f[0].data + float(self._offset[i]) * (i)) * u.Jy 
+            else:
+                flux= (f[0].data + float(self._offset[0]) * (i)) * u.Jy 
+            wavelength = np.arange(self._lambda1, self._lambda2, lambdaStep) * u.AA 
             # Spectrum construction
             spectrum_data["spec1d"] = Spectrum1D(spectral_axis=wavelength, flux=flux)
             spectrum_data["header"]["DATE-OBS"] = spectrum_data["header"]['DATE-OBS'].split('.')[0]
@@ -81,25 +87,39 @@ class PlotMySpec():
             plt.savefig(pngFilename, dpi=dpi)
             logging.info('\U0001F4C8 Plot %s > save as %s' % (spec["basename"], pngFilename))
             plt.show()
+            if('lines' in self._conf):
+                plt, ax = self.initPlot(spec, True)
+                pngFilename = spec['filename']+'_plot_wl.png'
+                ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=spec["header"]['OBJNAME'], alpha=1, color="black", lw=self._conf['line_width']) 
+                plt.tight_layout(pad=1, w_pad=0, h_pad=0)
+                dpi = self._conf['dpi'] if 'dpi' in self._conf else 150
+                plt.savefig(pngFilename, dpi=dpi)
+                logging.info('\U0001F4C8 Plot %s > save as %s' % (spec["basename"], pngFilename))
+                plt.show()
             
     def plotSpecGroupMode(self):
+        shift = 0
+        if('shift' in self._conf):
+            shift = self._conf['shift']
         items = list(self._spectums_collection.values())
-        plt, ax = self.initPlot(items[0])
+        plt, ax = self.initPlot(items[0], 'lines' in self._conf)
         pngFilename = items[0]['filename']+'_group_plot.png'
         for key, spec in sorted(self._spectums_collection.items()):
             label = self.parsePattern(spec, self._conf['label_pattern'])
             c = self._conf["compare_mode_color"] if "compare_mode_color" in self._conf and self._conf["compare_mode_color"] else None
-            ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width'])
+            ax.plot(spec["spec1d"].spectral_axis+shift* u.AA, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width'])
 
         if(not "compare_mode_no_label" in self._conf or self._conf["compare_mode_no_label"] != 1):
             plt.legend() 
+        
+
 
         dpi = self._conf['dpi'] if 'dpi' in self._conf else 150
         plt.savefig(pngFilename, dpi=dpi)
         logging.info('\U0001F4C8 Plot spectra > save as %s' % (pngFilename))
         plt.show()
 
-    def initPlot(self, spec):
+    def initPlot(self, spec, withlines=False):
         plt.rcParams['font.size'] = self._conf["font_size"]
         plt.rcParams['font.family'] = self._conf["font_family"]
 
@@ -114,8 +134,7 @@ class PlotMySpec():
         self._spectrum_subtitle = self.parsePattern(spec, self._conf["subtitle_pattern"])
         
         #Add Graph title
-        plt.suptitle(self._spectrum_title,fontsize=self._conf["title_font_size"], fontweight=0, color='black',  fontname =self._conf["font_family"])
-        plt.title(self._spectrum_subtitle,fontsize=self._conf["font_size"], fontweight=0, color='black', fontname = self._conf["font_family"])
+        plt.title(self._spectrum_title+'\n'+self._spectrum_subtitle,fontsize=self._conf["title_font_size"], fontweight=0, color='black', fontname = self._conf["font_family"])
 
         #Add X axis label
         ax.set_xlabel(self._conf['x_label'], fontdict=None, labelpad=None, fontname = self._conf["font_family"],size=self._conf["font_size"])
@@ -127,9 +146,16 @@ class PlotMySpec():
         if not (self._conf['no_grid']):
             ax.grid(color='grey', alpha=0.4, linestyle='-', linewidth=0.5, axis='both')
 
-        # Plot H alpha lines
-        if("show_halpha_line" in self._conf and self._conf["show_halpha_line"]):
-            plt.axvline(x=6562.82, color='red', linestyle='--', linewidth=0.5)
+        if(withlines):
+            for line in self._conf['lines']:
+                n = ''
+                name, lam, offset_x, offset_y = line.split(',')
+                split_oname = name.split(' ')
+                for w in split_oname:
+                    n += r"$\bf{%s}$ " % (w)
+                plt.axvline(x=float(lam), color=self._conf['lines_color'], linestyle='--', linewidth=0.7, alpha=0.6)
+                if(self._conf['lines_display_name']):
+                    ax.text(float(lam)+float(offset_x), float(offset_y), n+'-'+lam+' Å', rotation=90, va='bottom', color=self._conf['lines_color'],size='7')
 
         # Crop spectrum 
         ax.set_xlim(self._crop[:2])  if(len(self._crop) >= 2) else ax.set_xlim([self._lambda1, self._lambda2])
