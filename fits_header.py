@@ -7,9 +7,8 @@ os.chdir("sandbox/220905/")
 for file in glob.glob("[!_]*.fits"):
     with fits.open(file, mode='update') as hdul:
         hdr = hdul[0].header
-        #if not 'CRVAL1' in hdr:
         print(file+' >> '+hdr['OBJNAME'])
-        if 'RA' in hdr and 'DEC' in hdr and False:
+        if 'RA' in hdr and 'DEC' in hdr:
             hdr['CRVAL1'] = (hdr['RA'], 'approx coord. in RA')
             hdr['CRVAL2'] = (hdr['DEC'], 'approx coord. in DEC')
         else:
