@@ -110,7 +110,19 @@ class PlotMySpec():
             ax.plot(spec["spec1d"].spectral_axis+shift* u.AA, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width'])
 
         if(not "compare_mode_no_label" in self._conf or self._conf["compare_mode_no_label"] != 1):
-            plt.legend() 
+            if(c and self._offset):
+                count = 0
+                for key, spec in sorted(self._spectums_collection.items()):
+                    label = self.parsePattern(spec, self._conf['label_pattern'])
+                    if(self._crop[1]):
+                        ax.text(self._crop[1] - 12, 1.07+self._offset[0]*count,label, size='medium')
+                    else:
+                        ax.text(self._lambda2 - 12, 1.07+self._offset[0]*count,label, size='medium')
+                    count += 1
+            else:    
+                plt.legend() 
+       
+
         
 
 
