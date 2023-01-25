@@ -22,8 +22,8 @@ for file in glob.glob("[!_]*-*.fits"):
                 c = SkyCoord(ra+' '+dec, unit=(u.hourangle, u.deg))
                 crval1, crval2 = c.to_string().split(' ')
                 print('Coord ok : ', crval1, crval2)
-                hdr['CRVAL1'] = (float(crval1), 'approx coord. in RA')
-                hdr['CRVAL2'] = (float(crval2), 'approx coord. in DEC')
+                hdr['CRVAL1'] = (float(crval1), 'object coord. in RA')
+                hdr['CRVAL2'] = (float(crval2), 'object coord. in DEC')
     print('---')
 
 
