@@ -7,12 +7,14 @@ os.chdir("D:\ASTRO\starex\prism")
 for file in glob.glob("[!_]*-*.fits"):
     with fits.open(file, mode='update') as hdul:
         hdr = hdul[0].header
-        objname, number = file.split('-')
-        print(file+' >> '+objname)
-        if 'RA' in hdr and 'DEC' in hdr:
-            hdr['CRVAL1'] = (hdr['RA'], 'approx coord. in RA')
-            hdr['CRVAL2'] = (hdr['DEC'], 'approx coord. in DEC')
-        else:
+        #objname, number = file.split('-')
+        objname = hdr['OBJNAME']
+        if objname:
+            print(file+' >> '+objname)
+            # if 'RA' in hdr and 'DEC' in hdr:
+            #     hdr['CRVAL1'] = (hdr['RA'], 'approx coord. in RA')
+            #     hdr['CRVAL2'] = (hdr['DEC'], 'approx coord. in DEC')
+            # else:
             result_table = Simbad.query_object(objname)
             if result_table:
                 ra = result_table[0]['RA']
