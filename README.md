@@ -71,3 +71,10 @@ $ python pms.py /Volumes/Samsung_T5/2022-01-14/
 ```
 
 ![multiple spectra](http://www.astrosurf.com/uploads/monthly_2022_05/_sheliak_20220520_956_group_plot.png.2991b5a388ae1a37891d57211ca967dc.png)
+
+
+![multiple spectra](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F39b32ff5-a445-4bb0-bd0b-a184f4da0c2d%2Fm1_group_plot.png?id=3c2eeaa8-bc58-47e3-9bb0-b5d7d6493cd8&table=block&spaceId=7d247eda-d75c-46b1-bab6-a26d366d8605&width=2000&userId=5d8ddb97-4aa9-4c82-b8c6-1928cd30ab12&cache=v2)
+
+![multiple spectra](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F61475ef3-1ce4-441e-bc55-a0908d90512d%2Fok_hd123299_20220513_979_group_plot.png?id=10488798-79db-4d9f-9af5-6c4b25ba09ef&table=block&spaceId=7d247eda-d75c-46b1-bab6-a26d366d8605&width=2000&userId=5d8ddb97-4aa9-4c82-b8c6-1928cd30ab12&cache=v2)
+
+
