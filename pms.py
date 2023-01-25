@@ -158,7 +158,7 @@ class PlotMySpec():
         if not (self._conf['no_grid']):
             ax.grid(color='grey', alpha=0.4, linestyle='-', linewidth=0.5, axis='both')
 
-        if(withlines):
+        if(withlines and self._conf['lines']):
             for line in self._conf['lines']:
                 n = ''
                 name, lam, offset_x, offset_y = line.split(',')
