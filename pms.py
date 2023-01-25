@@ -87,7 +87,7 @@ class PlotMySpec():
             plt.savefig(pngFilename, dpi=dpi)
             logging.info('\U0001F4C8 Plot %s > save as %s' % (spec["basename"], pngFilename))
             plt.show()
-            if('lines' in self._conf):
+            if('lines' in self._conf and self._conf['lines']):
                 plt, ax = self.initPlot(spec, True)
                 pngFilename = spec['filename']+'_plot_wl.png'
                 ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=spec["header"]['OBJNAME'], alpha=1, color="black", lw=self._conf['line_width']) 
