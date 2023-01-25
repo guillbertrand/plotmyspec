@@ -15,7 +15,7 @@ subtitle_pattern: "%%BSS_INST%%"
 spec_file_regex: '_(.+)_(\d+)_(\d+)(.*).fit'
 crop: 0
 compare_mode : 0
-compare_mode_offset : 0
+compare_mode_y_offset : 0
 compare_mode_color: 
 compare_mode_no_label: 0
 dpi: 150
