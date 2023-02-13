@@ -87,7 +87,7 @@ class PlotMySpec():
             plt.savefig(pngFilename, dpi=dpi)
             logging.info('\U0001F4C8 Plot %s > save as %s' % (spec["basename"], pngFilename))
             plt.show()
-            if('lines' in self._conf):
+            if('lines' in self._conf and self._conf['lines'] and len(self._conf['lines'])):
                 plt, ax = self.initPlot(spec, True)
                 pngFilename = spec['filename']+'_plot_wl.png'
                 ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=spec["header"]['OBJNAME'], alpha=1, color="black", lw=self._conf['line_width']) 
@@ -104,9 +104,12 @@ class PlotMySpec():
         items = list(self._spectums_collection.values())
         plt, ax = self.initPlot(items[0], 'lines' in self._conf)
         pngFilename = items[0]['filename']+'_group_plot.png'
+        c = [x.strip() for x in self._conf["compare_mode_color_cycle"].split(',')]  if "compare_mode_color_cycle" in self._conf and self._conf["compare_mode_color_cycle"] else None
+        if(c and len(c) > 1):
+            ax.set_prop_cycle(color=c)
+            c = None
         for key, spec in sorted(self._spectums_collection.items()):
-            label = self.parsePattern(spec, self._conf['label_pattern'])
-            c = self._conf["compare_mode_color"] if "compare_mode_color" in self._conf and self._conf["compare_mode_color"] else None
+            label = self.parsePattern(spec, self._conf['label_pattern'])       
             ax.plot(spec["spec1d"].spectral_axis+shift* u.AA, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width'])
 
         if(not "compare_mode_no_label" in self._conf or self._conf["compare_mode_no_label"] != 1):
@@ -158,7 +161,7 @@ class PlotMySpec():
         if not (self._conf['no_grid']):
             ax.grid(color='grey', alpha=0.4, linestyle='-', linewidth=0.5, axis='both')
 
-        if(withlines):
+        if(withlines and self._conf['lines']):
             for line in self._conf['lines']:
                 n = ''
                 name, lam, offset_x, offset_y = line.split(',')
