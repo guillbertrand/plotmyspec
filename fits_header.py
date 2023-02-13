@@ -3,7 +3,7 @@ import astropy.units as u
 from astroquery.simbad import Simbad
 from astropy.coordinates import SkyCoord
 import glob, os
-os.chdir("D:\ASTRO\starex\prism")
+os.chdir("D:\ASTRO\starex\prism\\20230210")
 for file in glob.glob("[!_]*-*.fits"):
     with fits.open(file, mode='update') as hdul:
         hdr = hdul[0].header
