@@ -108,14 +108,18 @@ def plotLeftRightIVZoom(data):
     plt.rcParams['font.family'] = 'monospace'
                     
     for phase, (v, i, n, v_i, n_i, l, r) in data.items():
-        fig, ax = plt.subplots(figsize=(5,5))
+        fig, ax = plt.subplots(figsize=(6,5))
         ax.set_xlim((6558.0,6568.5))
         #ax.set_ylim((.20,.45))
 
+
+        ax.set_xlabel('Wavelength in Å')
+        ax.set_ylabel('Relative intensity')
+
         # left
-        plt.plot(l.spectral_axis, l.flux, "r-", lw=0.6, label="L = left polarization")
+        plt.plot(l.spectral_axis, l.flux, "r-", lw=0.6, label="I/Ic left polarization (L)")
         # right
-        plt.plot(r.spectral_axis, r.flux, "b-", lw=0.6, label="R = right polarization")
+        plt.plot(r.spectral_axis, r.flux, "b-", lw=0.6, label="I/Ic right polarization (R)")
         # v 
         plt.plot(r.spectral_axis, v.flux*2+.9, "k-", lw=0.6, label="V/Ic x 2 = (L-R)/(L+R) x 2")
         # n 

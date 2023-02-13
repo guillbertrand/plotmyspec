@@ -16,6 +16,7 @@ from specutils.manipulation import extract_region
 from specutils.analysis import centroid
 from astropy.modeling import models, fitting
 from specutils.fitting import fit_generic_continuum
+from binarystarsolve.binarystarsolve import StarSolve
 
 
 from datetime import date
@@ -131,21 +132,21 @@ def initPlot():
     fig, ax =  plt.subplots(figsize=(9,6))
 
     #Add Graph title
-    plt.suptitle(r"$\bf{α}$" + " " + r"$\bf{Dra}$" +" - HD123299 - Phased radial-velocities - %s observations collected from April to June 2022" % len(specs),fontsize=9, fontweight=0, color='black' )
-    plt.title("SkyWatcher refractor D=72mm f/6 + Star'Ex (2400 l/mm, 80x125, 10 μm slit) + ASI 183MM",fontsize=8, fontweight=0, color='black')
+    #plt.suptitle(r"$\bf{α}$" + " " + r"$\bf{Dra}$" +" - HD123299 - Radial-velocity measurements as a function of Julian Date \nSkyWatcher refractor D=72mm f/6 + Star'Ex (2400 l/mm, 80x125, 10 μm slit) + ASI 183MM" ,fontsize=9, fontweight=0, color='black' )
+    plt.suptitle(r"$\bf{α}$" + " " + r"$\bf{Dra}$" +" - HD123299 - Phased radial-velocities - 8 observations collected from April to October 2022\nSkyWatcher refractor D=72mm f/6 + Star'Ex (2400 l/mm, 80x125, 10 μm slit) + ASI 183MM"  ,fontsize=9, fontweight=0, color='black' )
 
     #Add X axis label
     ax.set_xlabel('Phase', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
 
     #Add Y axis label
-    ax.set_ylabel('Radial velocity [km/s]', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
+    ax.set_ylabel('Radial velocity [km $s^{-1}$]', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
     
     ax.grid(color='grey', alpha=0.2, linestyle='-', linewidth=0.5, axis='both')
 
     return (fig, ax)
 
 def plotRadialVelocityCurve(v0, K, e, w, jd0,color="red", label="", lw=0.5, alpha=1):
-    model_x = np.arange(-0.1,1.3, 0.005)
+    model_x = np.arange(-0.1,1.1, 0.005)
     model_y = list(map(lambda x: getRadialVelocity(x,jd0,K,e,w,v0), model_x))
     plt.plot(model_x, model_y, color, alpha=alpha, lw=lw, label=label)
 
@@ -162,18 +163,19 @@ def plotRadialVelocityDotsFromData(specs, color):
     xp.append(1)
     xjd.append(min(xjd))
     yrv.append(specs[min(xjd)]['rv'])
-    
+
     plt.plot(xp, yrv, color, lw=0.8)
+    #plt.errorbar(xp, yrv,yerr = errors, fmt ='o', color='k', lw=0.2)
  
    
 def saveAndShowPlot():
-    plt.legend() 
+    #plt.legend() 
 
     plt.tight_layout(pad=1, w_pad=0, h_pad=0)
 
-    plt.xticks(np.arange(-0.1, 1.3, 0.1))
+    plt.xticks(np.arange(-0.1, 1.1, 0.1))
     plt.yticks(np.arange(-50, 60, 10))
-    plt.savefig('sandbox/alphadra/hd123299-phased-radial-velocities.png', dpi=300)
+    plt.savefig('sandbox/alphadra/hd123299-phased-radial-velocities3.png', dpi=300)
     plt.show()  
       
 
@@ -189,9 +191,9 @@ if __name__ == '__main__':
     #res = binarySystemObservation('mizar', filename, 20.53835, 2459720.381331, 0.045)
 
     # Run for alpha dra
-    filename = 'D:\\ASTRO\\Starex\\alphadra\\time2.lst'
-    filename = '/Volumes/Samsung_T5/ASTRO/Starex/alphadra/time2.lst'
-    res = binarySystemObservation('alpha dra', filename, 51.4167, 2459713.479468, 0.05)
+    #filename = 'D:\\ASTRO\\Starex\\alphadra\\time2.lst'
+    #filename = '/Volumes/Samsung_T5/ASTRO/Starex/alphadra/time2.lst'
+    #res = binarySystemObservation('alpha dra', filename, 51.4167, 2459713.479468, 0.05)
 
     # Run plot radial velocity for alpha dra
     #filename = "D:\\ASTRO\\Starex\\alphadra\\radial2.lst"
@@ -212,7 +214,8 @@ if __name__ == '__main__':
         logging.info('\U0001F4C1 Error : 0 spectrum file found !')
     else:
         logging.info('\U0001F4C1 %d spectra files found !' % (len(specs)))
-        data = getBinSysData(specs, 51.440)
+        P = 51.41891
+        data = getBinSysData(specs, P)
         for key, value in data.items():
             data[key]['rv'] = getRv(value['centroid'])
     
@@ -220,17 +223,29 @@ if __name__ == '__main__':
         for key, value in data.items():
             print('jd : %s  phase : %s  centroid : %s   rv : %s' % (key, round(value['phase'],3), round(value['centroid'],3), round(value['rv'],3)))
     
-        initPlot()
-        
-        plotRadialVelocityCurve(-13.5, 47.48, 0.426, 21.80, 0.135, '--',  'R. Bischoff, et al.  - Jul, 2017',1)
-        plotRadialVelocityCurve(-13, 48.512, 0.4229, 21.28, 0.135, '--',  'K. Pavlovski, et al. - Nov, 2021',1)
-        plotRadialVelocityCurve(-15.597, 40.046, 0.35345, 22.8123, 0.135, 'k--', 'G. Bertrand          - Jul, 2022', 0.8, 0.8)
-        plotRadialVelocityDotsFromData(data, 'ko')
-    
-        saveAndShowPlot()
+        # me = (9999, 0)
+        # for pg in np.arange(51.2, 53.6, 0.01):
+        #     params, err, cov = StarSolve(data_file = "sandbox/alphadra/myRVdata.txt", star = "primary", Pguess= pg, covariance = True, graphs=False)
+        #     print('p: %s error:%s'%(pg, np.array(err[:4]).sum()))
+        #     if(np.array(err[:4]).sum()<me[0]):
+        #         me = (np.array(err[:4]).sum(), pg, params, err, cov)
 
-    # from binarystarsolve.binarystarsolve import StarSolve
-    # params, err, cov = StarSolve(data_file = "sandbox/alphadra/myRVdata.txt", star = "primary", Period = 51.440, covariance = True, graphs=True)
-    # plt.show()
-    # # [γ, K, ω, e, T0, P, a, f(M)]
-    # print(params, err)
+        # print(me)
+
+        initPlot()
+        # (v0, K, e, w, jd0,color="red", label="", lw=0.5, alpha=1)
+        
+        #[γ, K, ω, e, T0, P, a, f(M)]
+        params, err, cov = StarSolve(data_file = "sandbox/alphadra/myRVdata.txt", star = "primary", Period= P, covariance = True, graphs=False)
+        #plotRadialVelocityCurve(-13.5, 47.48, 0.426, 21.80, 0.135, 'r--',  'R. Bischoff, et al.  - Jul, 2017 ' ,1)
+        plotRadialVelocityCurve(params[0], params[1], params[3], params[2], 0.133, 'k-', 'G. Bertrand      - Oct, 2022 ' , 0.8, 0.8)
+        plotRadialVelocityDotsFromData(data, 'ko')
+        saveAndShowPlot()
+        print('[γ, K, ω, e, T0, P, a, f(M)]')
+        print(params)
+        print(err)
+
+        # params, err, cov = StarSolve(data_file = "sandbox/alphadra/myRVdata.txt", star = "primary", Pguess= P, covariance = True, graphs=True)
+        # plt.show()
+    
+    
