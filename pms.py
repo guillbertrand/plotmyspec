@@ -7,6 +7,7 @@ import argparse
 import numpy as np
 import astropy.units as u
 import matplotlib.pyplot as plt
+from matplotlib import ticker
 from astropy.io import fits
 from specutils import Spectrum1D
 
@@ -51,6 +52,15 @@ class PlotMySpec():
                 logging.info('\U0001F5A5 \U0000274C Unable to process %s' % (head_tail[1]))
                 continue
             logging.info('\U0001F5A5 \U00002705 Process %s' % (head_tail[1]))
+
+            # try find 2D Spectrum
+            if('2D_spectrum_display' in self._conf and self._conf['2D_spectrum_display']):
+                spec2d_path = spectrum_data["filename"]+self._conf['2D_spectrum_postfix']
+                if(os.path.exists(spec2d_path)):
+                    logging.info('\U0001F5A5 \U00002705 2D Spectrum found %s' % (spec2d_path))
+                    image_data = fits.getdata(spec2d_path, ext=0)
+                    spectrum_data["spec2d"] = image_data
+
             # Get first pixel reference
             xRef = spectrum_data["header"]['CRPIX1'] - 1
             #Get length of data axis1
@@ -67,6 +77,7 @@ class PlotMySpec():
             wavelength = np.arange(self._lambda1, self._lambda2, lambdaStep) * u.AA 
             # Spectrum construction
             spectrum_data["spec1d"] = Spectrum1D(spectral_axis=wavelength, flux=flux)
+
             spectrum_data["header"]["DATE-OBS"] = spectrum_data["header"]['DATE-OBS'].split('.')[0]
             
             self._spectums_collection[spectrum_data["header"]["DATE-OBS"]+str(i)] = spectrum_data
@@ -76,19 +87,31 @@ class PlotMySpec():
         for header_key in spec['header']:
             pattern = pattern.replace('%%'+header_key+'%%', str(spec['header'][header_key]))
         return pattern
-
+    
     def plotSpec(self):
         for spec in self._spectums_collection.values():
-            plt, ax = self.initPlot(spec)
+            plt, ax, ax2d = self.initPlot(spec)
             pngFilename = spec['filename']+'_plot.png'
             ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=spec["header"]['OBJNAME'], alpha=1, color="black", lw=self._conf['line_width']) 
             plt.tight_layout(pad=1, w_pad=0, h_pad=0)
+        
+            if('2D_spectrum_display' in self._conf and  self._conf['2D_spectrum_display']):
+                if(self._conf['2D_spectrum_posy'] and self._conf['2D_spectrum_height']): 
+                    y2 = int(int(self._conf['2D_spectrum_posy']) + (int(self._conf['2D_spectrum_height']) / 2))
+                    y1 =  int(int(self._conf['2D_spectrum_posy']) - (int(self._conf['2D_spectrum_height']) / 2))
+                    ax2d.set_ylim(y1,y2)
+                    ax2d.set_xlim(200, 4700) # todo
+                ax2d.imshow(spec['spec2d'], cmap=self._conf['2D_spectrum_cmap'],origin='lower')
+                ax2d.set_xticklabels([])
+                ax2d.set_yticklabels([])
+
             dpi = self._conf['dpi'] if 'dpi' in self._conf else 150
             plt.savefig(pngFilename, dpi=dpi)
             logging.info('\U0001F4C8 Plot %s > save as %s' % (spec["basename"], pngFilename))
             plt.show()
+
             if('lines' in self._conf and self._conf['lines']):
-                plt, ax = self.initPlot(spec, True)
+                plt, ax, ax2 = self.initPlot(spec, True)
                 pngFilename = spec['filename']+'_plot_wl.png'
                 ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=spec["header"]['OBJNAME'], alpha=1, color="black", lw=self._conf['line_width']) 
                 plt.tight_layout(pad=1, w_pad=0, h_pad=0)
@@ -102,7 +125,7 @@ class PlotMySpec():
         if('shift' in self._conf):
             shift = self._conf['shift']
         items = list(self._spectums_collection.values())
-        plt, ax = self.initPlot(items[0], 'lines' in self._conf)
+        plt, ax, ax2 = self.initPlot(items[0], 'lines' in self._conf)
         pngFilename = items[0]['filename']+'_group_plot.png'
         for key, spec in sorted(self._spectums_collection.items()):
             label = self.parsePattern(spec, self._conf['label_pattern'])
@@ -135,7 +158,16 @@ class PlotMySpec():
         plt.rcParams['font.size'] = self._conf["font_size"]
         plt.rcParams['font.family'] = self._conf["font_family"]
 
-        fig, ax = plt.subplots(figsize=(self._conf["fig_size_x"],self._conf["fig_size_y"]))
+        ax2d = None
+        if('2D_spectrum_display' in self._conf and self._conf['2D_spectrum_display']):
+            fig = plt.figure(figsize=(self._conf["fig_size_x"],self._conf["fig_size_y"]),constrained_layout=False)
+            gs = fig.add_gridspec(2, 1, height_ratios=(2, 5),wspace=0.0, hspace=0.0)
+            (ax2d, ax) = gs.subplots()
+
+            ax.label_outer()
+            ax2d.label_outer()
+        else:    
+            fig, ax = plt.subplots(figsize=(self._conf["fig_size_x"],self._conf["fig_size_y"]))
        
         self._spectrum_title = ''
         obj = self._conf['object_name'] if(self._conf['object_name']) else spec['header']['OBJNAME']
@@ -146,7 +178,10 @@ class PlotMySpec():
         self._spectrum_subtitle = self.parsePattern(spec, self._conf["subtitle_pattern"])
         
         #Add Graph title
-        plt.title(self._spectrum_title+'\n'+self._spectrum_subtitle,fontsize=self._conf["title_font_size"], fontweight=0, color='black', fontname = self._conf["font_family"])
+        mff = 'dejavuserif'
+        if('math_font_family' in self._conf):
+            mff = self._conf['math_font_family']
+        plt.suptitle(self._spectrum_title+'\n'+self._spectrum_subtitle,fontsize=self._conf["title_font_size"], fontweight=0, color='black',math_fontfamily=mff, fontname = self._conf["font_family"])
 
         #Add X axis label
         ax.set_xlabel(self._conf['x_label'], fontdict=None, labelpad=None, fontname = self._conf["font_family"],size=self._conf["font_size"])
@@ -156,7 +191,7 @@ class PlotMySpec():
         
         #Add grid 
         if not (self._conf['no_grid']):
-            ax.grid(color='grey', alpha=0.4, linestyle='-', linewidth=0.5, axis='both')
+            ax.grid(color='grey', alpha=0.4, linestyle='--', linewidth=0.6, axis='both')
 
         if(withlines and self._conf['lines']):
             for line in self._conf['lines']:
@@ -173,10 +208,14 @@ class PlotMySpec():
         ax.set_xlim(self._crop[:2])  if(len(self._crop) >= 2) else ax.set_xlim([self._lambda1, self._lambda2])
         if(len(self._crop) == 4):
             ax.set_ylim(self._crop[2:])
+
+        minor_locator = ticker.AutoMinorLocator(4)
+  
+        ax.xaxis.set_minor_locator(minor_locator)
             
         plt.tight_layout(pad=1, w_pad=0, h_pad=0)
 
-        return (plt, ax)
+        return (plt, ax, ax2d)
 
     def run(self):
         if(self._compare_mode and len(self._spectums_collection) > 1):
