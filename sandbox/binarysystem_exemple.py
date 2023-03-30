@@ -101,7 +101,7 @@ def getBinSysData(specs, period, jd0):
         f = fits.open(s)
         header = f[0].header
         jd = header['JD-OBS']
-        obs[jd] = {'fits':s, 'date':header['DATE-OBS'], 'centroid1':float(header['S_CAL'].split(';')[0]), 'centroid2':float(header['S_CAL'].split(';')[1]) }
+        obs[jd] = {'fits':s, 'centroid1':float(header['S_CAL'].split(';')[0]), 'centroid2':float(header['S_CAL'].split(';')[1]) }
 
     for jd in obs:
         phase = getPhase(float(jd0), period, float(jd))
@@ -130,23 +130,26 @@ def initPlot():
     fig, ax =  plt.subplots(figsize=(9,6))
 
     #Add Graph title
-    plt.suptitle(r"$\bf{Mizar}$" +" - HD116656 - Phased radial-velocities - %s observations collected from May to June 2022" % len(specs),fontsize=9, fontweight=0, color='black' )
-    plt.title("SkyWatcher refractor D=72mm f/6 + Star'Ex (2400 l/mm, 80x125, 10 μm slit) + ASI 183MM",fontsize=8, fontweight=0, color='black')
+    #plt.suptitle(r"$\bf{Mizar}$" +" - HD116656 - Phased radial-velocities - %s observations collected from May to June 2022" % len(specs),fontsize=9, fontweight=0, color='black' )
+    #plt.title("SkyWatcher refractor D=72mm f/6 + Star'Ex (2400 l/mm, 80x125, 10 μm slit) + ASI 183MM",fontsize=8, fontweight=0, color='black')
 
     #Add X axis label
-    ax.set_xlabel('Phase', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
+    fig.set_xlabel('Phase', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
 
     #Add Y axis label
-    ax.set_ylabel('Radial velocity [km/s]', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
+
+    fig.set_ylabel('Radial velocity [km/s]', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
     
-    ax.grid(color='grey', alpha=0.2, linestyle='-', linewidth=0.5, axis='both')
+    fig.grid(color='grey', alpha=0.2, linestyle='-', linewidth=0.5, axis='both')
 
     return (fig, ax)
 
-def plotRadialVelocityCurve(v0, K, e, w, jd0,style="-",color="red", label="", lw=0.5, alpha=1):
-    model_x = np.arange(0,1.1, 0.005)
+def plotRadialVelocityCurve(ax, v0, K, e, w, jd0,style="-",color="red", label="", lw=0.5, alpha=1):
+    model_x = np.arange(0,1.1, 0.0005)
     model_y = list(map(lambda x: getRadialVelocity(x,jd0,K,e,w,v0), model_x))
-    plt.plot(model_x, model_y, style, alpha=alpha, lw=lw, label=label, color=color)
+    ax.plot(model_x, model_y, style, alpha=alpha, lw=lw, label=label, color=color)
+    #ax.fill_between(model_x, model_y, style, alpha=0.2,label="_" ,legend=False,lw=lw, color='gray')
+    ax.legend()
 
 def plotRadialVelocityDotsFromData(specs, color, period):
     xp = []
@@ -165,13 +168,10 @@ def plotRadialVelocityDotsFromData(specs, color, period):
  
    
 def saveAndShowPlot():
-    plt.legend() 
+    
 
-    plt.tight_layout(pad=1, w_pad=0, h_pad=0)
-
-    plt.xticks(np.arange(0, 1.1, 0.1))
-    plt.yticks(np.arange(-90, 90, 10))
-    plt.savefig('sandbox/mizar/mizar-phased-radial-velocities2.png', dpi=300)
+    plt.tight_layout(pad=1, w_pad=1, h_pad=1)
+    plt.savefig('sandbox/exemples.png', dpi=300)
     plt.show()  
       
 
@@ -181,62 +181,30 @@ if __name__ == '__main__':
 
     #
 
-    period = 20.53835
-    jd0 = 2459720.381331
+    plt.rcParams['font.size'] = 8
+    plt.rcParams['font.family'] = 'monospace'
 
-    #find spec files 
-    specs = []
-    wdir = 'D:\\ASTRO\\Starex\\mizar\\'
-    wdir = 'sandbox/mizar/'
-    for root, dirs, files in os.walk(wdir):
-        for file in files:
-            regex = re.compile('rv(\d+).fit')
-            if(re.match(regex, file)):
-                specs.append(os.path.join(wdir, file))
-    if not len(specs):
-        logging.info('\U0001F4C1 Error : 0 spectrum file found !')
-    else:
-        logging.info('\U0001F4C1 %d spectra files found !' % (len(specs)))
-        data = getBinSysData(specs, period, jd0)
-        for key, value in data.items():
-            data[key]['rv1'] = getRv(value['centroid1'])
-            data[key]['rv2'] = getRv(value['centroid2'])
+    fig, ax =  plt.subplots(3,3,figsize=(10,7))
 
-        print('---- start plotRadialVelocityCurve --- ')
-        for key, value in data.items():
-            print('jd : %s  phase : %s  centroid 1 : %s, centroid 2 : %s, rv1 : %s, rv2 : %s' % (key, round(value['phase'],3), round(value['centroid1'],3), round(value['centroid2'],3), round(value['rv1'],3), round(value['rv2'],3)),value['date'])
-
-        print('---- start output 1 --- ')
-        with open('sandbox/mizar/myRVdata2.txt', 'w') as f: 
-            for key, value in data.items():
-                if(value['phase']>0.6):
-                    output = '%s %s %s' % (key-2400000, round(value['rv2'],3),round(value['rv1'],3))
-                else:
-                    output = '%s %s %s' % (key-2400000, round(value['rv1'],3),round(value['rv2'],3))
-                f.write(output+'\n')
-                print(value['fits'], output)
+    plt.setp(ax, xticks=np.arange(0, 1.1, 0.2), yticks=np.arange(-60, 100, 20), visible=True)
+    #Add X axis 
+    for i in range(0,3):
+        for ii in range(0,3):
+            ax[i, ii].set_xlabel('Phase', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
+            ax[i, ii].set_ylabel('Radial velocity [km/s]', fontdict=None, labelpad=None, fontname = 'monospace',size=8)
+            ax[i, ii].grid(color='grey', alpha=0.2, linestyle='-', linewidth=0.5, axis='both')
+            ax[i, ii].tick_params(axis='both', which='both', labelsize=7)
 
 
-    initPlot()
-    v0 = 0.625
-    plotRadialVelocityCurve(-5.6, 68.85, 0.542, 104.16, v0, '-', 'red',  'Primary - Budovicová et al. - 2004',1)
-    plotRadialVelocityCurve(-5.6, -65.51, 0.542, 104.16, v0, '--', 'red',  'Secondary - Budovicová et al. - 2004',1)
-    
-    
-
-    from binarystarsolve.binarystarsolve import StarSolve
-    params, err = StarSolve(data_file = "sandbox/mizar/myRVdata2.txt", star = "both", Pguess=period,  covariance = False, graphs=False)
-  
-    # [γ, K, ω, e, T0, P, a, f(M)]
-    print(params[0])
-    print(params[1])
-
-    plotRadialVelocityCurve(params[1][0], params[1][1], params[1][3], params[1][2], v0+0.005, '--', 'black', 'Primary - G. Bertrand - Jun, 2022', 0.8, 0.8)
-    plotRadialVelocityCurve(params[0][0], params[0][1], params[0][3], params[0][2], v0+0.005, '-', 'black',  'Secondary - G. Bertrand - Jun, 2022', 0.8, 0.8)
-
-    
-    plotRadialVelocityDotsFromData(data, 'ko', period)
+    v0 = 0.
+    plotRadialVelocityCurve(ax[0,0], 0, 50., 0., 0., v0, '-', 'black',  '(e=0, ω=0°)',1)
+    plotRadialVelocityCurve(ax[0,1], 0, 50., 0., 45., v0, '-', 'black',  '(e=0, ω=45°)',1)
+    plotRadialVelocityCurve(ax[0,2], 0, 50., 0., 90., v0, '-', 'black',  '(e=0, ω=90°)',1)
+    plotRadialVelocityCurve(ax[1,0], 0, 50, 0.4, 0., v0, '-', 'black',  '(e=0.4, ω=0°)',1)
+    plotRadialVelocityCurve(ax[1,1], 0, 50, 0.4, 45., v0, '-', 'black',  '(e=0.4, ω=45°)',1)
+    plotRadialVelocityCurve(ax[1,2], 0, 50, 0.4, 90., v0, '-', 'black',  '(e=0.4, ω=90°)',1)
+    plotRadialVelocityCurve(ax[2,0], 0, 50, 0.8, 0., v0, '-', 'black',  '(e=0.8, ω=0°)',1)
+    plotRadialVelocityCurve(ax[2,1], 0, 50, 0.8, 45., v0, '-', 'black',  '(e=0.8, ω=45°)',1)
+    plotRadialVelocityCurve(ax[2,2], 0, 50, 0.8, 90., v0, '-', 'black',  '(e=0.8, ω=90°)',1)
+ 
     saveAndShowPlot()
-
-    print(err[0])
-    print(err[1])

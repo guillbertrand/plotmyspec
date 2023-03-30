@@ -127,6 +127,8 @@ class PlotMySpec():
         items = list(self._spectums_collection.values())
         plt, ax, ax2 = self.initPlot(items[0], 'lines' in self._conf)
         pngFilename = items[0]['filename']+'_group_plot.png'
+        if "compare_mode_color_cycle" in self._conf and self._conf["compare_mode_color_cycle"]:
+            ax.set_prop_cycle(color=self._conf["compare_mode_color_cycle"].split(','))
         for key, spec in sorted(self._spectums_collection.items()):
             label = self.parsePattern(spec, self._conf['label_pattern'])
             c = self._conf["compare_mode_color"] if "compare_mode_color" in self._conf and self._conf["compare_mode_color"] else None

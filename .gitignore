@@ -1,2 +1,2 @@
-sandbox/alphadra/*
-sandbox/mizar/*
+sandbox/*/
+sandbox/**.png
