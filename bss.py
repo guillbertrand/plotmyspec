@@ -116,13 +116,13 @@ def plotRadialVelocityCurve(v0, K, e, w, jd0,color="red", lw=0.5, alpha=1, label
     model_y = list(map(lambda x: getRadialVelocityCurve(x,jd0,K,e,w,v0), model_x))
     plt.plot(model_x, model_y, color, alpha=alpha, lw=lw, label=label)
 
-def plotRadialVelocityDotsFromData(specs, color):  
+def plotPhasedRadialVelocityDotsFromData(specs, color):  
     colors = {}
     i = 0
     for jd, s in specs.items():
         if(s['header']['OBSERVER'] not in colors.keys()):
             if conf["points_color"] and ',' in conf["points_color"]:
-                colors[s['header']['OBSERVER']] = conf["points_color"].split(',')[i]
+                colors[s['header']['OBSERVER']] =  [x.strip() for x in conf["points_color"].split(',')][i]
             elif conf["points_color"]:
                 colors[s['header']['OBSERVER']] = conf["points_color"]
             else:
@@ -189,8 +189,11 @@ if __name__ == '__main__':
         logging.info('\U0001F4C1 Error : 0 spectrum file found !')
     else:
         logging.info('\U0001F4C1 %d spectra files found !' % (len(specs)))
-        P = 51.41891
-        data = extractObservations(specs, P)
+
+        p = conf['period_guess']
+        if(conf['period']):
+            p = conf['period']
+        data = extractObservations(specs, p)
 
         # write bss result file for BinaryStarSolver
         with open(wdir+'/bss_results.txt', 'w') as f: 
@@ -200,8 +203,8 @@ if __name__ == '__main__':
 
         initPlot()
         #[γ, K, ω, e, T0, P, a, f(M)]
-        params, err, cov = StarSolve(data_file = "sandbox/alphadra/bss_results.txt", star = "primary", Period= P, covariance = True, graphs=False)
-        plotRadialVelocityCurve(params[0], params[1], params[3], params[2], 0.133, conf['line_color'], 0.8, 0.8)
+        params, err, cov = StarSolve(data_file = "sandbox/alphadra/bss_results.txt", star = "primary", Period= conf['period'], Pguess=conf['period_guess'], covariance = True, graphs=False)
+        plotPhasedRadialVelocityCurve(params[0], params[1], params[3], params[2], 0.133, conf['line_color'], 0.8, 0.8)
         plotRadialVelocityDotsFromData(data, 'ko')
         saveAndShowPlot()
         print('[γ, K, ω, e, T0, P, a, f(M)]')
