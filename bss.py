@@ -116,7 +116,7 @@ def plotRadialVelocityCurve(v0, K, e, w, jd0,color="red", lw=0.5, alpha=1, label
     model_y = list(map(lambda x: getRadialVelocityCurve(x,jd0,K,e,w,v0), model_x))
     plt.plot(model_x, model_y, color, alpha=alpha, lw=lw, label=label)
 
-def plotPhasedRadialVelocityDotsFromData(specs, color):  
+def plotRadialVelocityDotsFromData(specs):  
     colors = {}
     i = 0
     for jd, s in specs.items():
@@ -130,14 +130,14 @@ def plotPhasedRadialVelocityDotsFromData(specs, color):
             i+=1
             plt.errorbar(s['phase'], s['radial_velocity'][0].value,yerr = s['radial_velocity'][1].value, label=s['header']['OBSERVER'], fmt ='o', color=colors[s['header']['OBSERVER']], lw=0.2)
         else:
-            plt.errorbar(s['phase'], s['radial_velocity'][0].value,yerr = s['radial_velocity'][1].value, fmt ='o', color=colors[s['header']['OBSERVER']], lw=0.2)    
-
+            plt.errorbar(s['phase'], s['radial_velocity'][0].value,yerr = s['radial_velocity'][1].value, fmt ='o', color=colors[s['header']['OBSERVER']], lw=0.2)        
+   
 def saveAndShowPlot():
     plt.legend() 
     plt.tight_layout(pad=1, w_pad=0, h_pad=0)
     plt.xticks(np.arange(-0.1, 1.1, 0.1))
     plt.yticks(np.arange(-50, 60, 10))
-    #plt.savefig('sandbox/alphadra/hd123299-phased-radial-velocities3.png', dpi=300)
+    plt.savefig(wdir+'/bss_phased_result.png', dpi=conf['dpi'])
     plt.show()  
 
 if __name__ == '__main__':
@@ -204,8 +204,8 @@ if __name__ == '__main__':
         initPlot()
         #[γ, K, ω, e, T0, P, a, f(M)]
         params, err, cov = StarSolve(data_file = "sandbox/alphadra/bss_results.txt", star = "primary", Period= conf['period'], Pguess=conf['period_guess'], covariance = True, graphs=False)
-        plotPhasedRadialVelocityCurve(params[0], params[1], params[3], params[2], 0.133, conf['line_color'], 0.8, 0.8)
-        plotRadialVelocityDotsFromData(data, 'ko')
+        plotRadialVelocityCurve(params[0], params[1], params[3], params[2], 0.133, conf['line_color'], 0.8, 0.8)
+        plotRadialVelocityDotsFromData(data)
         saveAndShowPlot()
         print('[γ, K, ω, e, T0, P, a, f(M)]')
         print(params)
