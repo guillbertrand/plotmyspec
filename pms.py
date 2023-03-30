@@ -109,9 +109,8 @@ class PlotMySpec():
             plt.savefig(pngFilename, dpi=dpi)
             logging.info('\U0001F4C8 Plot %s > save as %s' % (spec["basename"], pngFilename))
             plt.show()
-
-            if('lines' in self._conf and self._conf['lines']):
-                plt, ax, ax2 = self.initPlot(spec, True)
+            if('lines' in self._conf and self._conf['lines'] and len(self._conf['lines'])):
+                plt, ax = self.initPlot(spec, True)
                 pngFilename = spec['filename']+'_plot_wl.png'
                 ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=spec["header"]['OBJNAME'], alpha=1, color="black", lw=self._conf['line_width']) 
                 plt.tight_layout(pad=1, w_pad=0, h_pad=0)
@@ -127,11 +126,12 @@ class PlotMySpec():
         items = list(self._spectums_collection.values())
         plt, ax, ax2 = self.initPlot(items[0], 'lines' in self._conf)
         pngFilename = items[0]['filename']+'_group_plot.png'
-        if "compare_mode_color_cycle" in self._conf and self._conf["compare_mode_color_cycle"]:
-            ax.set_prop_cycle(color=self._conf["compare_mode_color_cycle"].split(','))
+        c = [x.strip() for x in self._conf["compare_mode_color_cycle"].split(',')]  if "compare_mode_color_cycle" in self._conf and self._conf["compare_mode_color_cycle"] else None
+        if(c and len(c) > 1):
+            ax.set_prop_cycle(color=c)
+            c = None
         for key, spec in sorted(self._spectums_collection.items()):
-            label = self.parsePattern(spec, self._conf['label_pattern'])
-            c = self._conf["compare_mode_color"] if "compare_mode_color" in self._conf and self._conf["compare_mode_color"] else None
+            label = self.parsePattern(spec, self._conf['label_pattern'])       
             ax.plot(spec["spec1d"].spectral_axis+shift* u.AA, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width'])
 
         if(not "compare_mode_no_label" in self._conf or self._conf["compare_mode_no_label"] != 1):

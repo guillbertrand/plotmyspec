@@ -21,13 +21,13 @@ spec_file_regex: '_(.+)_(\d+)_(\d+)(.*).fit'
 2D_spectrum_cmap: gray
 crop: 0
 compare_mode : 0
-compare_mode_y_offset : 0
-compare_mode_color: 
+compare_mode_offset : 0
+compare_mode_color_cycle: #red,black,yellow... or nothing for automatic mode
 compare_mode_no_label: 0
 dpi: 150
 lines_display_name: 0
 lines_color: red
-lines: 
+lines: None
   # line name, position in angstroms, offset x, offset y
   # line name, position in angstroms, offset x, offset y
   #- Ca II K,3933.68,-4,1.5
