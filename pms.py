@@ -53,14 +53,6 @@ class PlotMySpec():
                 continue
             logging.info('\U0001F5A5 \U00002705 Process %s' % (head_tail[1]))
 
-            # try find 2D Spectrum
-            if('2D_spectrum_display' in self._conf and self._conf['2D_spectrum_display']):
-                spec2d_path = spectrum_data["filename"]+self._conf['2D_spectrum_postfix']
-                if(os.path.exists(spec2d_path)):
-                    logging.info('\U0001F5A5 \U00002705 2D Spectrum found %s' % (spec2d_path))
-                    image_data = fits.getdata(spec2d_path, ext=0)
-                    spectrum_data["spec2d"] = image_data
-
             # Get first pixel reference
             xRef = spectrum_data["header"]['CRPIX1'] - 1
             #Get length of data axis1
@@ -90,20 +82,10 @@ class PlotMySpec():
     
     def plotSpec(self):
         for spec in self._spectums_collection.values():
-            plt, ax, ax2d = self.initPlot(spec)
+            plt, ax = self.initPlot(spec)
             pngFilename = spec['filename']+'_plot.png'
             ax.plot(spec["spec1d"].spectral_axis, spec["spec1d"].flux, label=spec["header"]['OBJNAME'], alpha=1, color="black", lw=self._conf['line_width']) 
             plt.tight_layout(pad=1, w_pad=0, h_pad=0)
-        
-            if('2D_spectrum_display' in self._conf and  self._conf['2D_spectrum_display']):
-                if(self._conf['2D_spectrum_posy'] and self._conf['2D_spectrum_height']): 
-                    y2 = int(int(self._conf['2D_spectrum_posy']) + (int(self._conf['2D_spectrum_height']) / 2))
-                    y1 =  int(int(self._conf['2D_spectrum_posy']) - (int(self._conf['2D_spectrum_height']) / 2))
-                    ax2d.set_ylim(y1,y2)
-                    ax2d.set_xlim(200, 4700) # todo
-                ax2d.imshow(spec['spec2d'], cmap=self._conf['2D_spectrum_cmap'],origin='lower')
-                ax2d.set_xticklabels([])
-                ax2d.set_yticklabels([])
 
             dpi = self._conf['dpi'] if 'dpi' in self._conf else 150
             plt.savefig(pngFilename, dpi=dpi)
@@ -160,16 +142,8 @@ class PlotMySpec():
         plt.rcParams['font.size'] = self._conf["font_size"]
         plt.rcParams['font.family'] = self._conf["font_family"]
 
-        ax2d = None
-        if('2D_spectrum_display' in self._conf and self._conf['2D_spectrum_display']):
-            fig = plt.figure(figsize=(self._conf["fig_size_x"],self._conf["fig_size_y"]),constrained_layout=False)
-            gs = fig.add_gridspec(2, 1, height_ratios=(2, 5),wspace=0.0, hspace=0.0)
-            (ax2d, ax) = gs.subplots()
 
-            ax.label_outer()
-            ax2d.label_outer()
-        else:    
-            fig, ax = plt.subplots(figsize=(self._conf["fig_size_x"],self._conf["fig_size_y"]))
+        fig, ax = plt.subplots(figsize=(self._conf["fig_size_x"],self._conf["fig_size_y"]))
        
         self._spectrum_title = ''
         obj = self._conf['object_name'] if(self._conf['object_name']) else spec['header']['OBJNAME']
@@ -217,7 +191,7 @@ class PlotMySpec():
             
         plt.tight_layout(pad=1, w_pad=0, h_pad=0)
 
-        return (plt, ax, ax2d)
+        return (plt, ax)
 
     def run(self):
         if(self._compare_mode and len(self._spectums_collection) > 1):
