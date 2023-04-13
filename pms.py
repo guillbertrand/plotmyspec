@@ -44,11 +44,10 @@ class PlotMySpec():
         for path in paths:
             f = fits.open(path)
             head_tail = os.path.split(path)
-            spectrum_data = {}
-            spectrum_data["filename"] = os.path.splitext(path)[0]
+            spectrum_data = {"filename": os.path.splitext(path)[0]}
             spectrum_data["basename"] = head_tail[1]
             spectrum_data["header"] = f[0].header
-            if not('CRPIX1' in spectrum_data["header"]):
+            if 'CRPIX1' not in spectrum_data["header"]:
                 logging.info('\U0001F5A5 \U0000274C Unable to process %s' % (head_tail[1]))
                 continue
             logging.info('\U0001F5A5 \U00002705 Process %s' % (head_tail[1]))
@@ -65,19 +64,19 @@ class PlotMySpec():
             if(self._offset and len(self._offset)>1):
                 flux= (f[0].data + float(self._offset[i]) * (i)) * u.Jy 
             else:
-                flux= (f[0].data + float(self._offset[0]) * (i)) * u.Jy 
-            wavelength = np.arange(self._lambda1, self._lambda2, lambdaStep) * u.AA 
+                flux= (f[0].data + float(self._offset[0]) * (i)) * u.Jy
+            wavelength = np.arange(self._lambda1, self._lambda2, lambdaStep) * u.AA
             # Spectrum construction
             spectrum_data["spec1d"] = Spectrum1D(spectral_axis=wavelength, flux=flux)
 
             spectrum_data["header"]["DATE-OBS"] = spectrum_data["header"]['DATE-OBS'].split('.')[0]
-            
+
             self._spectums_collection[spectrum_data["header"]["DATE-OBS"]+str(i)] = spectrum_data
             i+=1
 
     def parsePattern(self, spec, pattern):
         for header_key in spec['header']:
-            pattern = pattern.replace('%%'+header_key+'%%', str(spec['header'][header_key]))
+            pattern = pattern.replace(f'%%{header_key}%%', str(spec['header'][header_key]))
         return pattern
     
     def plotSpec(self):
@@ -102,9 +101,7 @@ class PlotMySpec():
                 plt.show()
             
     def plotSpecGroupMode(self):
-        shift = 0
-        if('shift' in self._conf):
-            shift = self._conf['shift']
+        shift = self._conf['shift'] if ('shift' in self._conf) else 0
         items = list(self._spectums_collection.values())
         plt, ax, ax2 = self.initPlot(items[0], 'lines' in self._conf)
         pngFilename = items[0]['filename']+'_group_plot.png'
@@ -116,21 +113,22 @@ class PlotMySpec():
             label = self.parsePattern(spec, self._conf['label_pattern'])       
             ax.plot(spec["spec1d"].spectral_axis+shift* u.AA, spec["spec1d"].flux, label=label, color=c, alpha=1, lw=self._conf['line_width'])
 
-        if(not "compare_mode_no_label" in self._conf or self._conf["compare_mode_no_label"] != 1):
-            if(c and self._offset):
-                count = 0
-                for key, spec in sorted(self._spectums_collection.items()):
+        if (
+            "compare_mode_no_label" not in self._conf
+            or self._conf["compare_mode_no_label"] != 1
+        ):
+            if (c and self._offset):
+                for count, (key, spec) in enumerate(sorted(self._spectums_collection.items())):
                     label = self.parsePattern(spec, self._conf['label_pattern'])
                     if(self._crop[1]):
                         ax.text(self._crop[1] - 12, 1.07+self._offset[0]*count,label, size='medium')
                     else:
                         ax.text(self._lambda2 - 12, 1.07+self._offset[0]*count,label, size='medium')
-                    count += 1
             else:    
                 plt.legend() 
-       
 
-        
+
+
 
 
         dpi = self._conf['dpi'] if 'dpi' in self._conf else 150
@@ -144,15 +142,15 @@ class PlotMySpec():
 
 
         fig, ax = plt.subplots(figsize=(self._conf["fig_size_x"],self._conf["fig_size_y"]))
-       
+
         self._spectrum_title = ''
-        obj = self._conf['object_name'] if(self._conf['object_name']) else spec['header']['OBJNAME']
+        obj = self._conf['object_name'] or spec['header']['OBJNAME']
         split_oname = obj.split(' ')
         for w in split_oname:
             self._spectrum_title += r"$\bf{%s}$ " % (w)
         self._spectrum_title += self.parsePattern(spec, self._conf["title_pattern"])
         self._spectrum_subtitle = self.parsePattern(spec, self._conf["subtitle_pattern"])
-        
+
         #Add Graph title
         mff = 'dejavuserif'
         if('math_font_family' in self._conf):
@@ -164,21 +162,27 @@ class PlotMySpec():
 
         #Add Y axis label
         ax.set_ylabel(self._conf['y_label'], fontdict=None, labelpad=None, fontname = self._conf["font_family"],size=self._conf["font_size"])
-        
+
         #Add grid 
         if not (self._conf['no_grid']):
             ax.grid(color='grey', alpha=0.4, linestyle='--', linewidth=0.6, axis='both')
 
-        if(withlines and self._conf['lines']):
+        if (withlines and self._conf['lines']):
             for line in self._conf['lines']:
-                n = ''
                 name, lam, offset_x, offset_y = line.split(',')
                 split_oname = name.split(' ')
-                for w in split_oname:
-                    n += r"$\bf{%s}$ " % (w)
+                n = ''.join(r"$\bf{%s}$ " % (w) for w in split_oname)
                 plt.axvline(x=float(lam), color=self._conf['lines_color'], linestyle='--', linewidth=0.7, alpha=0.6)
-                if(self._conf['lines_display_name']):
-                    ax.text(float(lam)+float(offset_x), float(offset_y), n+'-'+lam+' Å', rotation=90, va='bottom', color=self._conf['lines_color'],size='7')
+                if self._conf['lines_display_name']:
+                    ax.text(
+                        float(lam) + float(offset_x),
+                        float(offset_y),
+                        f'{n}-{lam} Å',
+                        rotation=90,
+                        va='bottom',
+                        color=self._conf['lines_color'],
+                        size='7',
+                    )
 
         # Crop spectrum 
         ax.set_xlim(self._crop[:2])  if(len(self._crop) >= 2) else ax.set_xlim([self._lambda1, self._lambda2])
@@ -186,9 +190,9 @@ class PlotMySpec():
             ax.set_ylim(self._crop[2:])
 
         minor_locator = ticker.AutoMinorLocator(4)
-  
+
         ax.xaxis.set_minor_locator(minor_locator)
-            
+
         plt.tight_layout(pad=1, w_pad=0, h_pad=0)
 
         return (plt, ax)
