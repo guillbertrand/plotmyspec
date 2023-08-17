@@ -17,6 +17,12 @@ __version__ = 2.0
 PlotMySpec 
 ----------
 Small script to plot fits spectra using Python and Matplotlib
+
+Usage
+-----
+python pms.py -c config.yaml
+
+
 ----------
 '''
 class PlotMySpec():
@@ -30,6 +36,7 @@ class PlotMySpec():
     _offset = [0]
 
     def __init__(self, paths, conf):
+
         self._conf = conf
         self._compare_mode = self._conf["compare_mode"]
         if("crop" in self._conf and self._conf["crop"]):
@@ -75,11 +82,21 @@ class PlotMySpec():
             i+=1
 
     def parsePattern(self, spec, pattern):
+        """
+        Parse pattern and replace %%header_key%% by header value
+        :param spec: spectrum data
+        :param pattern: pattern to parse
+        :return: parsed pattern
+        """
         for header_key in spec['header']:
             pattern = pattern.replace(f'%%{header_key}%%', str(spec['header'][header_key]))
         return pattern
     
     def plotSpec(self):
+        """
+        Plot spectrum
+        :return: None
+        """
         for spec in self._spectums_collection.values():
             plt, ax = self.initPlot(spec)
             pngFilename = spec['filename']+'_plot.png'
@@ -101,9 +118,13 @@ class PlotMySpec():
                 plt.show()
             
     def plotSpecGroupMode(self):
+        """
+        Plot spectrum in group mode
+        :return: None
+        """
         shift = self._conf['shift'] if ('shift' in self._conf) else 0
         items = list(self._spectums_collection.values())
-        plt, ax, ax2 = self.initPlot(items[0], 'lines' in self._conf)
+        plt, ax = self.initPlot(items[0], 'lines' in self._conf)
         pngFilename = items[0]['filename']+'_group_plot.png'
         c = [x.strip() for x in self._conf["compare_mode_color_cycle"].split(',')]  if "compare_mode_color_cycle" in self._conf and self._conf["compare_mode_color_cycle"] else None
         if(c and len(c) > 1):
@@ -137,6 +158,12 @@ class PlotMySpec():
         plt.show()
 
     def initPlot(self, spec, withlines=False):
+        """
+        Init plot
+        :param spec: spectrum data
+        :param withlines: if True, plot with lines
+        :return: plot
+        """
         plt.rcParams['font.size'] = self._conf["font_size"]
         plt.rcParams['font.family'] = self._conf["font_family"]
 
@@ -198,6 +225,10 @@ class PlotMySpec():
         return (plt, ax)
 
     def run(self):
+        """
+        Run
+        Plot spectrum in single or group mode
+        """
         if(self._compare_mode and len(self._spectums_collection) > 1):
             self.plotSpecGroupMode()
         else:
@@ -206,10 +237,10 @@ class PlotMySpec():
 
 if __name__ == '__main__':
     specs = []
-    #
+    # default config file name
     default_conf_filename = 'pms.config.yaml'
 
-    #
+    # parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("path", type=str, help="Path to your fits directory")
     parser.add_argument("-c", "--config", type=str, default=default_conf_filename, help="Custom config file name")
