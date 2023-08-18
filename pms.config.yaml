@@ -2,15 +2,15 @@
 line_width: 0.6
 font_size: 9
 title_font_size: 9
-font_family: serif
-math_font_family: dejavuserif
+font_family: dejavusans
+math_font_family: dejavusans
 fig_size_x: 9
 fig_size_y: 5
 x_label: Wavelength in Å
 y_label: Relative intensity
-no_grid: 0
+no_grid: 1
 object_name: 
-title_pattern: "- %%DATE-OBS%% - %%EXPTIME2%% - %%BSS_SITE%% - %%OBSERVER%%"
+title_pattern: "- %%DATE-OBS%% - %%EXPTIME2%% - %%OBSERVER%%"
 label_pattern: "%%DATE-OBS%%"
 subtitle_pattern: "%%BSS_INST%%"
 spec_file_regex: '_(.+)_(\d+)_(\d+)(.*).fit'
@@ -21,7 +21,7 @@ spec_file_regex: '_(.+)_(\d+)_(\d+)(.*).fit'
 2D_spectrum_cmap: gray
 crop: 0
 compare_mode : 0
-compare_mode_offset : 0
+compare_mode_y_offset : 0
 compare_mode_color_cycle: #red,black,yellow... or nothing for automatic mode
 compare_mode_no_label: 0
 dpi: 150
