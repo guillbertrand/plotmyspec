@@ -21,7 +21,7 @@ spec_file_regex: '_(.+)_(\d+)_(\d+)(.*).fit'
 2D_spectrum_cmap: gray
 crop: 0
 compare_mode : 0
-compare_mode_offset : 0
+compare_mode_y_offset : 0
 compare_mode_color_cycle: #red,black,yellow... or nothing for automatic mode
 compare_mode_no_label: 0
 dpi: 150
