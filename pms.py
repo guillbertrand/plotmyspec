@@ -11,7 +11,7 @@ from matplotlib import ticker
 from astropy.io import fits
 from specutils import Spectrum1D
 
-__version__ = 2.0
+__version__ = 2.1
 
 ''' 
 PlotMySpec 
@@ -20,9 +20,8 @@ Small script to plot fits spectra using Python and Matplotlib
 
 Usage
 -----
-python pms.py -c config.yaml
-
-
+python pms.py examples/ 
+python pms.py examples/ -c customconf.yaml
 ----------
 '''
 

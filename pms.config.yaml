@@ -1,34 +1,42 @@
 ---
+# ----------------------------------
+# matplotlib general config
+# ----------------------------------
 line_width: 0.6
 font_size: 9
 title_font_size: 9
-font_family: dejavusans
-math_font_family: dejavusans
+font_family: arial
+math_font_family: custom
 fig_size_x: 9
 fig_size_y: 5
 x_label: Wavelength in Å
 y_label: Relative intensity
-no_grid: 1
+no_grid: 0
+dpi: 150
+
+# ----------------------------------
+# spectrum config
+# ----------------------------------
+# object_name:  :auto-filled with keyword OBJNAME from header fits if empty
 object_name: 
 title_pattern: "- %%DATE-OBS%% - %%EXPTIME2%% - %%OBSERVER%%"
 label_pattern: "%%DATE-OBS%%"
 subtitle_pattern: "%%BSS_INST%%"
 spec_file_regex: '_(.+)_(\d+)_(\d+)(.*).fit'
-2D_spectrum_display: 0
-2D_spectrum_postfix: '_2D.fits'
-2D_spectrum_posy:
-2D_spectrum_height: 
-2D_spectrum_cmap: gray
+# crop: allow to crop spectra (ex: "crop: 6500,6600,0,2" --> lambdamin,lambdamax,fluxmin,fluxmax )
 crop: 0
+# compare_mode : display all spectra on the same plot if active
 compare_mode : 0
 compare_mode_y_offset : 0
 compare_mode_color_cycle: #red,black,yellow... or nothing for automatic mode
 compare_mode_no_label: 0
-dpi: 150
+
+# ----------------------------------
+# optional : display vertical lines
+# ----------------------------------
 lines_display_name: 0
 lines_color: red
-lines: None
-  # line name, position in angstroms, offset x, offset y
+lines: 
   # line name, position in angstroms, offset x, offset y
   #- Ca II K,3933.68,-4,1.5
   #- Ca II H,3968.49,-4,1.5
