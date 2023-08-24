@@ -33,7 +33,7 @@ dpi: 150
 # ----------------------------------
 # spectrum config
 # ----------------------------------
-# object_name:  :auto-filled with keyword OBJNAME from header fits if empty
+# object_name:  auto-filled with keyword OBJNAME from header fits if empty
 object_name: 
 title_pattern: "- %%DATE-OBS%% - %%EXPTIME2%% - %%OBSERVER%%"
 label_pattern: "%%DATE-OBS%%"
@@ -48,7 +48,7 @@ compare_mode_color_cycle: #red,black,yellow... or nothing for automatic mode
 compare_mode_no_label: 0
 
 # ----------------------------------
-# optional : display vertical lines
+#  display vertical lines
 # ----------------------------------
 lines_display_name: 1
 lines_color: red
